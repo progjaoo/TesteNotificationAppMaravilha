@@ -54,7 +54,7 @@ export default function Index() {
 
   const toggleSheet = () => {
     Animated.timing(translateY, {
-      toValue: expanded ? height * 0.85 : 0,
+      toValue: expanded ? height * 0.8 : 0,
       duration: 350,
       useNativeDriver: true,
     }).start();
@@ -63,7 +63,7 @@ export default function Index() {
 
   useEffect(() => {
     Animated.timing(translateY, {
-      toValue: height * 0.83,
+      toValue: height * 0.8,
       duration: 0,
       useNativeDriver: true,
     }).start();
@@ -85,11 +85,11 @@ export default function Index() {
     <View style={styles.container}>
       <Stack.Screen
       options={{
-        title: 'Rádio Maravilha - 89.1',
+        title: '',
         headerStyle: { backgroundColor: '#FF8000' },
         headerTintColor: '#fff',
         headerTitleAlign: 'center',
-        headerRight: () => null, 
+        headerRight: () => null
       }}
     />
 
@@ -122,12 +122,13 @@ export default function Index() {
               )}
             </TouchableOpacity>
           )}
-          <Text style={styles.sheetTitle}>Rádio Maravilha - 89.1</Text>
+          <Text style={styles.sheetTitle}>  Ouça Ao Vivo</Text> 
         </View>
 
         <Ionicons
           name={expanded ? 'chevron-down' : 'chevron-up'}
           size={28}
+
           color="#fff"
         />
       </TouchableOpacity>
@@ -306,5 +307,4 @@ const styles = StyleSheet.create({
     shadowRadius: 4,
     elevation: 4,
   },
-
 });

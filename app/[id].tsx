@@ -12,7 +12,7 @@ const Page = () => {
 			}}
 		>
 			<Stack.Screen options={{ title: `Page ${id}` }} />
-			{/* <Text>You are on Page {id}</Text> */}
+			
 		</View>
 	);
 };
