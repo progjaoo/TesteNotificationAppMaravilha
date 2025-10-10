@@ -44,11 +44,7 @@ export default function Index() {
   }
 
   function getSheetPositionExpanded() {
-    return Platform.select({
-      ios: 0,
-      android: 0,
-      default: 0,
-    })!;
+    return 0;
   }
 
   const togglePlay = async () => {
@@ -119,7 +115,7 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      {/* HEADER CUSTOMIZADO */}
+      {/* HEADER */}
       <Stack.Screen
         options={{
           header: () => (
@@ -135,6 +131,7 @@ export default function Index() {
                 source={require('../../assets/images/maravilhabranco.png')}
                 style={styles.logoHeader}
               />
+
               <TouchableOpacity onPress={handleShare} style={styles.shareButton}>
                 <Ionicons name="share-social-outline" size={26} color="#fff" />
               </TouchableOpacity>
@@ -149,7 +146,7 @@ export default function Index() {
         <SocialLinks />
       </View>
 
-      {/* BOTTOM SHEET PERSONALIZADO */}
+      {/* BOTTOM SHEET */}
       <Animated.View
         style={[
           styles.bottomSheet,
@@ -160,72 +157,79 @@ export default function Index() {
           },
         ]}
       >
-        <TouchableOpacity
-          onPress={toggleSheet}
-          activeOpacity={0.9}
-          style={styles.sheetHeader}
-        >
+        <TouchableOpacity onPress={toggleSheet} activeOpacity={0.9} style={styles.sheetHeader}>
+          {/* LADO ESQUERDO */}
           <View style={styles.headerLeft}>
             {!expanded && (
-              <TouchableOpacity onPress={togglePlay} style={styles.miniPlayButton}>
-                {loading ? (
-                  <ActivityIndicator color="#FF8000" />
-                ) : (
-                  <Ionicons
-                    name={isPlaying ? 'pause' : 'play'}
-                    size={28}
-                    color="#FF8000"
-                  />
-                )}
-              </TouchableOpacity>
+              <>
+                <TouchableOpacity onPress={togglePlay} style={styles.miniPlayButton}>
+                  {loading ? (
+                    <ActivityIndicator color="#FF8000" />
+                  ) : (
+                    <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color="#FF8000" />
+                  )}
+                </TouchableOpacity>
+                <Text style={styles.sheetTitleMinimized}>Ouça Ao Vivo</Text>
+              </>
             )}
-            {!expanded && (
-              <Text style={styles.sheetTitle}>Ouça Ao Vivo</Text>
+
+            {expanded && (
+              <View style={styles.titleWrapperExpanded}>
+                <Text style={styles.sheetTitleExpanded}>Página Inicial</Text>
+              </View>
             )}
           </View>
 
-          <Ionicons
-            name={expanded ? 'chevron-down' : 'chevron-up'}
-            size={28}
-            color="#fff"
-          />
+          {/* SETA DIREITA */}
+          <View
+            style={[
+              styles.arrowWrapper,
+              expanded ? styles.arrowWrapperExpanded : styles.arrowWrapperCollapsed,
+            ]}
+          >
+            <Ionicons name={expanded ? 'chevron-down' : 'chevron-up'} size={28} color="#fff" />
+          </View>
         </TouchableOpacity>
 
         {expanded && (
           <>
+            {/* TABS */}
             <View style={styles.tabContainer}>
               <TouchableOpacity
-                style={[styles.tabButton, activeTab === 'ouvir' && styles.tabActive]}
+                style={[
+                  styles.tabButton,
+                  activeTab === 'ouvir' && styles.tabActive,
+                  activeTab === 'ouvir' && { marginBottom: 4 },
+                ]}
                 onPress={() => setActiveTab('ouvir')}
               >
-                <Text
-                  style={[styles.tabText, activeTab === 'ouvir' && styles.tabTextActive]}
-                >
+                <Text style={[styles.tabText, activeTab === 'ouvir' && styles.tabTextActive]}>
                   Ouvir
                 </Text>
               </TouchableOpacity>
 
               <TouchableOpacity
-                style={[styles.tabButton, activeTab === 'assistir' && styles.tabActive]}
+                style={[
+                  styles.tabButton,
+                  activeTab === 'assistir' && styles.tabActive,
+                  activeTab === 'assistir' && { marginBottom: 4 },
+                ]}
                 onPress={() => setActiveTab('assistir')}
               >
-                <Text
-                  style={[
-                    styles.tabText,
-                    activeTab === 'assistir' && styles.tabTextActive,
-                  ]}
-                >
+                <Text style={[styles.tabText, activeTab === 'assistir' && styles.tabTextActive]}>
                   Assistir
                 </Text>
               </TouchableOpacity>
             </View>
 
+            {/* CONTEÚDO */}
             <View style={styles.contentArea}>
               {activeTab === 'ouvir' ? (
                 <View style={styles.audioContainer}>
                   <Image
-                    source={require('../../assets/images/musica.png')}
+                    source={Image.resolveAssetSource(require('../../assets/images/musica.png'))}
                     style={styles.musicImage}
+                    resizeMode="contain"
                   />
                   <Text style={styles.musicTitle}>Nome da Música:</Text>
                   <Text style={styles.musicSubtitle}>Álbum / Intérprete:</Text>
@@ -257,6 +261,7 @@ export default function Index() {
 /* === ESTILOS === */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
+
   customHeader: {
     backgroundColor: '#FF8000',
     height: 115,
@@ -269,6 +274,7 @@ const styles = StyleSheet.create({
   menuButton: { position: 'absolute', left: 20, top: 55 },
   shareButton: { position: 'absolute', right: 20, top: 55 },
   logoHeader: { width: 160, height: 150, resizeMode: 'contain', marginBottom: 10 },
+
   mainContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
 
   bottomSheet: {
@@ -281,7 +287,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 10,
-    paddingBottom: Platform.OS === 'android' ? 20 : 0,
   },
 
   sheetHeader: {
@@ -291,8 +296,53 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 18,
   },
-  sheetTitle: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+
+  headerLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
+
+  sheetTitleMinimized: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+
+  titleWrapperExpanded: {
+    flex: 1,
+    alignItems: 'center',
+  },
+
+  sheetTitleExpanded: {
+    color: '#fff',
+    fontSize: 18,
+    fontWeight: 'bold',
+    textAlign: 'center',
+  },
+
+  arrowIcon: {
+    marginRight:16,
+    marginLeft:0,
+    marginStart:0
+  },
+arrowWrapper: {
+  position: 'absolute',
+  top: 0,
+  bottom: 0,
+  justifyContent: 'center',
+  right: 12,
+  paddingHorizontal: 4,
+},
+
+arrowWrapperExpanded: {
+  right: 20, 
+},
+
+arrowWrapperCollapsed: {
+  right: 12, 
+},
+
   miniPlayButton: {
     width: 48,
     height: 48,
@@ -300,10 +350,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 4,
   },
 
   tabContainer: {
@@ -332,10 +378,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFF',
     justifyContent: 'center',
     alignItems: 'center',
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 6,
-    elevation: 5,
     marginTop: 15,
   },
   webviewContainer: {
@@ -346,7 +388,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     marginTop: 20,
   },
-  musicImage: { width: 400, height: 200, marginBottom: 10, resizeMode: 'contain' },
+  musicImage: { width: 400, height: 200, marginBottom: 10 },
   musicTitle: { color: 'white', fontWeight: 'bold', fontSize: 20, paddingTop: 20 },
   musicSubtitle: { color: 'white', fontSize: 16 },
 });
