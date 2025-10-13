@@ -12,9 +12,10 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const menuItems = [
-		{ id: 42, title: 'Notícias', icon: 'book-outline' },
-		{ id: 43, title: 'Programação', icon: 'calendar-outline' },
-		{ id: 44, title: 'Informações', icon: 'information-circle-outline' }
+		// { id: 42, title: 'Notícias', icon: 'book-outline' },
+		// { id: 43, title: 'Programação', icon: 'calendar-outline' },
+		{ id: 44, title: 'Informações', icon: 'information-circle-outline' },
+		{ id: 45, title: 'Redes Sociais', icon: 'globe' }
 	];
 	const router = useRouter();
 	const pathname = usePathname();

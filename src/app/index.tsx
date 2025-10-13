@@ -16,6 +16,7 @@ import {
   View,
 } from 'react-native';
 import { WebView } from 'react-native-webview';
+import { getRadioInfo } from '../api/radioService';
 import SocialLinks from '../components/SocialLinks';
 
 const { height } = Dimensions.get('window');
@@ -28,6 +29,10 @@ export default function Index() {
   const [isPlaying, setIsPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const soundRef = useRef<Audio.Sound | null>(null);
+
+  const [musicaAtual, setMusicaAtual] = useState('-');
+  const [titulo, setTitulo] = useState('');
+  const [genero, setGenero] = useState('');
 
   const borderRadius = translateY.interpolate({
     inputRange: [getSheetPositionExpanded(), getSheetPositionCollapsed()],
@@ -47,15 +52,47 @@ export default function Index() {
     return 0;
   }
 
+  useEffect(() => {
+    (async () => {
+      try {
+        await Audio.setAudioModeAsync({
+          allowsRecordingIOS: false,
+          staysActiveInBackground: true,
+          playsInSilentModeIOS: true,
+          shouldDuckAndroid: false,
+          playThroughEarpieceAndroid: false,
+        });
+      } catch (e) {
+        console.log('Erro ao configurar áudio:', e);
+      }
+    })();
+
+    // 🔄 Carrega as informações da rádio
+    const fetchRadioInfo = async () => {
+      const info = await getRadioInfo();
+      if (info) {
+        setMusicaAtual(info.musica_atual || '-');
+        setTitulo(info.titulo || '');
+        setGenero(info.genero || '');
+      }
+    };
+
+    fetchRadioInfo();
+    const interval = setInterval(fetchRadioInfo, 20000); // atualiza a cada 20s
+    return () => clearInterval(interval);
+  }, []);
+
   const togglePlay = async () => {
     try {
       if (!soundRef.current) {
         setLoading(true);
-        const { sound } = await Audio.Sound.createAsync({
-          uri: 'https://stm19.srvstm.com:7080/stream',
-        });
+        const { sound } = await Audio.Sound.createAsync(
+          {
+            uri: 'https://stm19.srvstm.com:7080/stream',
+          },
+          { shouldPlay: true }
+        );
         soundRef.current = sound;
-        await sound.playAsync();
         setIsPlaying(true);
       } else {
         if (isPlaying) {
@@ -115,7 +152,6 @@ export default function Index() {
 
   return (
     <View style={styles.container}>
-      {/* HEADER */}
       <Stack.Screen
         options={{
           header: () => (
@@ -172,12 +208,6 @@ export default function Index() {
                 <Text style={styles.sheetTitleMinimized}>Ouça Ao Vivo</Text>
               </>
             )}
-
-            {expanded && (
-              <View style={styles.titleWrapperExpanded}>
-                <Text style={styles.sheetTitleExpanded}>Página Inicial</Text>
-              </View>
-            )}
           </View>
 
           {/* SETA DIREITA */}
@@ -199,7 +229,7 @@ export default function Index() {
                 style={[
                   styles.tabButton,
                   activeTab === 'ouvir' && styles.tabActive,
-                  activeTab === 'ouvir' && { marginBottom: 4 },
+                  activeTab === 'ouvir' && { marginBottom: 5 },
                 ]}
                 onPress={() => setActiveTab('ouvir')}
               >
@@ -212,7 +242,7 @@ export default function Index() {
                 style={[
                   styles.tabButton,
                   activeTab === 'assistir' && styles.tabActive,
-                  activeTab === 'assistir' && { marginBottom: 4 },
+                  activeTab === 'assistir' && { marginBottom: 5 },
                 ]}
                 onPress={() => setActiveTab('assistir')}
               >
@@ -227,12 +257,14 @@ export default function Index() {
               {activeTab === 'ouvir' ? (
                 <View style={styles.audioContainer}>
                   <Image
-                    source={Image.resolveAssetSource(require('../../assets/images/musica.png'))}
+                    source={require('../../assets/images/musica.png')}
                     style={styles.musicImage}
                     resizeMode="contain"
                   />
-                  <Text style={styles.musicTitle}>Nome da Música:</Text>
-                  <Text style={styles.musicSubtitle}>Álbum / Intérprete:</Text>
+                  <Text style={styles.musicTitle}>Nome da Música: {musicaAtual}</Text>
+                  <Text style={styles.musicSubtitle}>
+                    A Rádio de Todas as Igrejas{'\n'}     que toca o som do céu
+                  </Text>
                   <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
                     {loading ? (
                       <ActivityIndicator color="#FF8000" />
@@ -258,10 +290,8 @@ export default function Index() {
   );
 }
 
-/* === ESTILOS === */
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: '#fff' },
-
   customHeader: {
     backgroundColor: '#FF8000',
     height: 115,
@@ -274,9 +304,7 @@ const styles = StyleSheet.create({
   menuButton: { position: 'absolute', left: 20, top: 55 },
   shareButton: { position: 'absolute', right: 20, top: 55 },
   logoHeader: { width: 160, height: 150, resizeMode: 'contain', marginBottom: 10 },
-
   mainContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-
   bottomSheet: {
     position: 'absolute',
     left: 0,
@@ -288,7 +316,6 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 10,
   },
-
   sheetHeader: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -296,53 +323,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 24,
     paddingVertical: 18,
   },
-
-  headerLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
+  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
+  sheetTitleMinimized: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
+  arrowWrapper: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    right: 12,
+    paddingHorizontal: 4,
   },
-
-  sheetTitleMinimized: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-
-  titleWrapperExpanded: {
-    flex: 1,
-    alignItems: 'center',
-  },
-
-  sheetTitleExpanded: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-
-  arrowIcon: {
-    marginRight:16,
-    marginLeft:0,
-    marginStart:0
-  },
-arrowWrapper: {
-  position: 'absolute',
-  top: 0,
-  bottom: 0,
-  justifyContent: 'center',
-  right: 12,
-  paddingHorizontal: 4,
-},
-
-arrowWrapperExpanded: {
-  right: 20, 
-},
-
-arrowWrapperCollapsed: {
-  right: 12, 
-},
-
+  arrowWrapperExpanded: { right: 20 },
+  arrowWrapperCollapsed: { right: 12 },
   miniPlayButton: {
     width: 48,
     height: 48,
@@ -351,7 +343,6 @@ arrowWrapperCollapsed: {
     justifyContent: 'center',
     alignItems: 'center',
   },
-
   tabContainer: {
     flexDirection: 'row',
     justifyContent: 'center',
@@ -368,8 +359,7 @@ arrowWrapperCollapsed: {
   tabActive: { backgroundColor: '#fff' },
   tabText: { color: '#fff', fontSize: 15, fontWeight: '500' },
   tabTextActive: { color: '#FF8000', fontWeight: '700' },
-
-  contentArea: { flex: 1, alignItems: 'center', marginTop: 20 },
+  contentArea: { flex: 1, alignItems: 'center', marginTop: 80 },
   audioContainer: { alignItems: 'center' },
   playButton: {
     width: 80,
@@ -390,5 +380,5 @@ arrowWrapperCollapsed: {
   },
   musicImage: { width: 400, height: 200, marginBottom: 10 },
   musicTitle: { color: 'white', fontWeight: 'bold', fontSize: 20, paddingTop: 20 },
-  musicSubtitle: { color: 'white', fontSize: 16 },
+  musicSubtitle: { color: 'white', fontSize: 16,  marginTop:5},
 });

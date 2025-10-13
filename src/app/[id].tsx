@@ -3,17 +3,17 @@ import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import { TouchableOpacity, View } from 'react-native';
 import { JSX } from 'react/jsx-runtime';
 import Informacoes from '../pages/informacoes';
-import Noticias from '../pages/noticiais';
-import Programacao from '../pages/programacao';
+import RedesSociais from '../pages/redesSociais';
 
 export default function Page() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
   const pages: Record<string, { title: string; component: JSX.Element }> = {
-    '42': { title: 'Notícias', component: <Noticias /> },
-    '43': { title: 'Programação', component: <Programacao /> },
+    // '42': { title: 'Notícias', component: <Noticias /> },
+    // '43': { title: 'Programação', component: <Programacao /> },
     '44': { title: 'Informações', component: <Informacoes /> },
+    '45': { title: 'Redes Sociais', component: <RedesSociais/> },
   };
 
   const current = pages[id as string] || { title: 'Página', component: <View /> };
