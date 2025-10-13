@@ -22,7 +22,6 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 
 	return (
 		<DrawerContentScrollView {...props}>
-			{/* Logo */}
 			<View style={{ padding: 16, alignItems: 'center' }}>
 				<Image
 					source={require('@/assets/images/logomaravilha.png')}
@@ -30,15 +29,12 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 				/>
 			</View>
 
-			{/* Itens padrões da Drawer */}
 			<DrawerItemList {...props} />
 
-			{/* Título da seção */}
 			<View style={{ padding: 16, paddingTop: 40 }}>
 				<Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Opções</Text>
 			</View>
 
-			{/* Itens personalizados */}
 			{menuItems.map((item) => {
 				const isActive = pathname === `/${item.id}`;
 
@@ -84,7 +80,6 @@ export default function RootLayout() {
 					drawerActiveTintColor: 'red',
 					drawerHideStatusBarOnOpen: true,
 					drawerStyle: { backgroundColor: '#FF8000' }
-					// COR DA DRAWER TROCAR DEPOIS
 				}}
 			>
 				<Drawer.Screen

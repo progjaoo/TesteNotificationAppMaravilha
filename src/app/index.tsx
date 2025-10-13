@@ -8,9 +8,9 @@ import {
   Animated,
   Dimensions,
   Image,
+  PanResponder,
   Platform,
   Share,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -18,6 +18,7 @@ import {
 import { WebView } from 'react-native-webview';
 import { getRadioInfo } from '../api/radioService';
 import SocialLinks from '../components/SocialLinks';
+import { styles } from '../styles/index.styles';
 
 const { height } = Dimensions.get('window');
 
@@ -33,6 +34,17 @@ export default function Index() {
   const [musicaAtual, setMusicaAtual] = useState('-');
   const [titulo, setTitulo] = useState('');
   const [genero, setGenero] = useState('');
+  const [interprete, setInterprete] = useState('');
+  const [capa, setCapa] = useState<string | null>(null);
+
+  const getSheetPositionCollapsed = () =>
+    Platform.select({
+      ios: height * 0.75,
+      android: height * 0.8,
+      default: height * 0.8,
+    })!;
+
+  const getSheetPositionExpanded = () => 0;
 
   const borderRadius = translateY.interpolate({
     inputRange: [getSheetPositionExpanded(), getSheetPositionCollapsed()],
@@ -40,18 +52,55 @@ export default function Index() {
     extrapolate: 'clamp',
   });
 
-  function getSheetPositionCollapsed() {
-    return Platform.select({
-      ios: height * 0.75,
-      android: height * 0.8,
-      default: height * 0.8,
-    })!;
-  }
+  // 🎯 PanResponder — apenas no header do BottomSheet
+  const panResponder = useRef(
+    PanResponder.create({
+      onMoveShouldSetPanResponder: (_, gestureState) =>
+        Math.abs(gestureState.dy) > 10,
+      onPanResponderMove: (_, gestureState) => {
+        let newValue;
+        if (expanded) newValue = gestureState.dy;
+        else newValue = getSheetPositionCollapsed() + gestureState.dy;
 
-  function getSheetPositionExpanded() {
-    return 0;
-  }
+        if (
+          newValue >= getSheetPositionExpanded() &&
+          newValue <= getSheetPositionCollapsed()
+        ) {
+          translateY.setValue(newValue);
+        }
+      },
+      onPanResponderRelease: (_, gestureState) => {
+        const threshold = height * 0.4;
+        let currentPosition = expanded
+          ? gestureState.dy
+          : getSheetPositionCollapsed() + gestureState.dy;
 
+        const shouldExpand =
+          currentPosition < threshold || gestureState.vy < -0.5;
+        const shouldCollapse =
+          currentPosition > threshold || gestureState.vy > 0.5;
+
+        const targetPosition = shouldExpand
+          ? getSheetPositionExpanded()
+          : shouldCollapse
+          ? getSheetPositionCollapsed()
+          : expanded
+          ? getSheetPositionExpanded()
+          : getSheetPositionCollapsed();
+
+        Animated.spring(translateY, {
+          toValue: targetPosition,
+          useNativeDriver: true,
+          tension: 80,
+          friction: 12,
+        }).start();
+
+        setExpanded(targetPosition === getSheetPositionExpanded());
+      },
+    })
+  ).current;
+
+  // ⚙️ Configuração inicial
   useEffect(() => {
     (async () => {
       try {
@@ -67,29 +116,28 @@ export default function Index() {
       }
     })();
 
-    // 🔄 Carrega as informações da rádio
     const fetchRadioInfo = async () => {
       const info = await getRadioInfo();
       if (info) {
         setMusicaAtual(info.musica_atual || '-');
         setTitulo(info.titulo || '');
         setGenero(info.genero || '');
+        setCapa(info.capa_musica || null);
       }
     };
 
     fetchRadioInfo();
-    const interval = setInterval(fetchRadioInfo, 20000); // atualiza a cada 20s
+    const interval = setInterval(fetchRadioInfo, 20000);
     return () => clearInterval(interval);
   }, []);
 
+  // ▶️ Controle do áudio
   const togglePlay = async () => {
     try {
       if (!soundRef.current) {
         setLoading(true);
         const { sound } = await Audio.Sound.createAsync(
-          {
-            uri: 'https://stm19.srvstm.com:7080/stream',
-          },
+          { uri: 'https://stm19.srvstm.com:7080/stream' },
           { shouldPlay: true }
         );
         soundRef.current = sound;
@@ -108,6 +156,21 @@ export default function Index() {
     } finally {
       setLoading(false);
     }
+  };
+
+  const pauseAudioIfPlaying = async () => {
+    if (soundRef.current && isPlaying) {
+      await soundRef.current.pauseAsync();
+      setIsPlaying(false);
+    }
+  };
+
+  // ⏹️ Ao mudar para “Assistir”, pausa o áudio
+  const handleTabChange = async (tab: 'ouvir' | 'assistir') => {
+    if (tab === 'assistir') {
+      await pauseAudioIfPlaying();
+    }
+    setActiveTab(tab);
   };
 
   const toggleSheet = () => {
@@ -178,7 +241,11 @@ export default function Index() {
 
       {/* CONTEÚDO PRINCIPAL */}
       <View style={styles.mainContent}>
-        <Ionicons name="radio" size={90} color="#FF8000" />
+              <Image
+                source={require('../../assets/images/logocentro.png')} //DIMINUIR 
+                style={styles.logocentro}
+                resizeMode="contain"
+              />
         <SocialLinks />
       </View>
 
@@ -193,33 +260,40 @@ export default function Index() {
           },
         ]}
       >
-        <TouchableOpacity onPress={toggleSheet} activeOpacity={0.9} style={styles.sheetHeader}>
-          {/* LADO ESQUERDO */}
-          <View style={styles.headerLeft}>
-            {!expanded && (
-              <>
-                <TouchableOpacity onPress={togglePlay} style={styles.miniPlayButton}>
-                  {loading ? (
-                    <ActivityIndicator color="#FF8000" />
-                  ) : (
-                    <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color="#FF8000" />
-                  )}
-                </TouchableOpacity>
-                <Text style={styles.sheetTitleMinimized}>Ouça Ao Vivo</Text>
-              </>
-            )}
-          </View>
-
-          {/* SETA DIREITA */}
-          <View
-            style={[
-              styles.arrowWrapper,
-              expanded ? styles.arrowWrapperExpanded : styles.arrowWrapperCollapsed,
-            ]}
+        {/* HEADER */}
+        <View {...panResponder.panHandlers}>
+          <TouchableOpacity
+            onPress={toggleSheet}
+            activeOpacity={0.9}
+            style={styles.sheetHeader}
           >
-            <Ionicons name={expanded ? 'chevron-down' : 'chevron-up'} size={28} color="#fff" />
-          </View>
-        </TouchableOpacity>
+            <View style={styles.dragIndicator} />
+
+            <View style={styles.headerLeft}>
+              {!expanded && (
+                <>
+                  <TouchableOpacity onPress={togglePlay} style={styles.miniPlayButton}>
+                    {loading ? (
+                      <ActivityIndicator color="#FF8000" />
+                    ) : (
+                      <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color="#FF8000" />
+                    )}
+                  </TouchableOpacity>
+                  <Text style={styles.sheetTitleMinimized}>Ouça Ao Vivo</Text>
+                </>
+              )}
+            </View>
+
+            <View
+              style={[
+                styles.arrowWrapper,
+                expanded ? styles.arrowWrapperExpanded : styles.arrowWrapperCollapsed,
+              ]}
+            >
+              <Ionicons name={expanded ? 'chevron-down' : 'chevron-up'} size={28} color="#fff" />
+            </View>
+          </TouchableOpacity>
+        </View>
 
         {expanded && (
           <>
@@ -231,7 +305,7 @@ export default function Index() {
                   activeTab === 'ouvir' && styles.tabActive,
                   activeTab === 'ouvir' && { marginBottom: 5 },
                 ]}
-                onPress={() => setActiveTab('ouvir')}
+                onPress={() => handleTabChange('ouvir')}
               >
                 <Text style={[styles.tabText, activeTab === 'ouvir' && styles.tabTextActive]}>
                   Ouvir
@@ -244,7 +318,7 @@ export default function Index() {
                   activeTab === 'assistir' && styles.tabActive,
                   activeTab === 'assistir' && { marginBottom: 5 },
                 ]}
-                onPress={() => setActiveTab('assistir')}
+                onPress={() => handleTabChange('assistir')}
               >
                 <Text style={[styles.tabText, activeTab === 'assistir' && styles.tabTextActive]}>
                   Assistir
@@ -263,17 +337,13 @@ export default function Index() {
                   />
                   <Text style={styles.musicTitle}>Nome da Música: {musicaAtual}</Text>
                   <Text style={styles.musicSubtitle}>
-                    A Rádio de Todas as Igrejas{'\n'}     que toca o som do céu
+                    {'A Rádio de todas as Igrejas\nque toca o som do céu'}
                   </Text>
                   <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
                     {loading ? (
                       <ActivityIndicator color="#FF8000" />
                     ) : (
-                      <Ionicons
-                        name={isPlaying ? 'pause' : 'play'}
-                        size={36}
-                        color="#FF8000"
-                      />
+                      <Ionicons name={isPlaying ? 'pause' : 'play'} size={36} color="#FF8000" />
                     )}
                   </TouchableOpacity>
                 </View>
@@ -289,96 +359,3 @@ export default function Index() {
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#fff' },
-  customHeader: {
-    backgroundColor: '#FF8000',
-    height: 115,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingTop: 40,
-    position: 'relative',
-  },
-  menuButton: { position: 'absolute', left: 20, top: 55 },
-  shareButton: { position: 'absolute', right: 20, top: 55 },
-  logoHeader: { width: 160, height: 150, resizeMode: 'contain', marginBottom: 10 },
-  mainContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
-  bottomSheet: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    height,
-    backgroundColor: '#FF8000',
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 10,
-  },
-  sheetHeader: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: 24,
-    paddingVertical: 18,
-  },
-  headerLeft: { flexDirection: 'row', alignItems: 'center', gap: 10 },
-  sheetTitleMinimized: { color: '#fff', fontSize: 18, fontWeight: 'bold' },
-  arrowWrapper: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    justifyContent: 'center',
-    right: 12,
-    paddingHorizontal: 4,
-  },
-  arrowWrapperExpanded: { right: 20 },
-  arrowWrapperCollapsed: { right: 12 },
-  miniPlayButton: {
-    width: 48,
-    height: 48,
-    borderRadius: 24,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
-  },
-  tabButton: {
-    paddingVertical: 10,
-    paddingHorizontal: 30,
-    marginHorizontal: 5,
-    borderRadius: 20,
-  },
-  tabActive: { backgroundColor: '#fff' },
-  tabText: { color: '#fff', fontSize: 15, fontWeight: '500' },
-  tabTextActive: { color: '#FF8000', fontWeight: '700' },
-  contentArea: { flex: 1, alignItems: 'center', marginTop: 80 },
-  audioContainer: { alignItems: 'center' },
-  playButton: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
-    backgroundColor: '#FFF',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 15,
-  },
-  webviewContainer: {
-    width: '90%',
-    aspectRatio: 16 / 9,
-    borderRadius: 12,
-    overflow: 'hidden',
-    backgroundColor: 'black',
-    marginTop: 20,
-  },
-  musicImage: { width: 400, height: 200, marginBottom: 10 },
-  musicTitle: { color: 'white', fontWeight: 'bold', fontSize: 20, paddingTop: 20 },
-  musicSubtitle: { color: 'white', fontSize: 16,  marginTop:5},
-});

@@ -1,31 +1,62 @@
 import { Ionicons } from '@expo/vector-icons';
 import React from 'react';
-import { Linking, TouchableOpacity, View } from 'react-native';
+import { Image, Linking, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 export default function SocialLinks() {
   const openLink = async (url: string) => {
-    if (await Linking.canOpenURL(url)) await Linking.openURL(url);
+    const supported = await Linking.canOpenURL(url);
+    if (supported) {
+      await Linking.openURL(url);
+    } else {
+      console.log(`Não foi possível abrir o link: ${url}`);
+    }
   };
 
   return (
-    <View style={{
-      flexDirection: 'row',
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative',
-      bottom: 10,
-      width: '100%',
-      marginTop:40
-    }}>
+    <View style={styles.container}>
       <TouchableOpacity onPress={() => openLink('https://api.whatsapp.com/send?phone=5531999982089')}>
-        <Ionicons name="logo-whatsapp" size={32} color="#FF8000" style={{ marginHorizontal: 20, marginBottom:30 }} />
+        <Image
+          source={require('../../assets/images/whatsapp.png')}
+          style={styles.iconImage}
+        />
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => openLink('https://www.instagram.com/radio89maravilha/')}>
-        <Ionicons name="logo-instagram" size={32} color="#FF8000" style={{ marginHorizontal: 20,  marginBottom:30 }} />
+        <Image
+          source={require('../../assets/images/instagram.png')}
+          style={styles.iconImage}
+        />
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => openLink('https://www.youtube.com/@radio89maravilha')}>
-        <Ionicons name="logo-youtube" size={32} color="#FF8000" style={{ marginHorizontal: 20,  marginBottom:30}} />
+        <Ionicons
+          name="logo-youtube"
+          size={32}
+          color="#FF8000"
+          style={styles.iconVector}
+        />
       </TouchableOpacity>
     </View>
   );
 }
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+    marginTop: 40,
+    position: 'relative', 
+    bottom: 10,
+  },
+  iconImage: {
+    width: 29,
+    height: 29,
+    marginHorizontal: 20,
+    marginBottom: 30,
+  },
+  iconVector: {
+    marginHorizontal: 20,
+    marginBottom: 30,
+  },
+});
