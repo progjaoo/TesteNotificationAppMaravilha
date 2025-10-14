@@ -8,6 +8,7 @@ import {
   Animated,
   Dimensions,
   Image,
+  Linking,
   PanResponder,
   Platform,
   Share,
@@ -99,7 +100,7 @@ export default function Index() {
     })
   ).current;
 
-  // ⚙️ Configuração inicial
+  // ⚙️ Config inicial
   useEffect(() => {
     (async () => {
       try {
@@ -159,12 +160,16 @@ export default function Index() {
 
   const pauseAudioIfPlaying = async () => {
     if (soundRef.current && isPlaying) {
-      await soundRef.current.pauseAsync();
+      try {
+        await soundRef.current.pauseAsync();
+      } catch (e) {
+        console.warn('Erro ao pausar áudio:', e);
+      }
       setIsPlaying(false);
     }
   };
 
-  // ⏹️ Ao mudar para “Assistir”, pausa o áudio
+  // ⏹️ Ao mudar pra “Assistir”, pausa o áudio
   const handleTabChange = async (tab: 'ouvir' | 'assistir') => {
     if (tab === 'assistir') {
       await pauseAudioIfPlaying();
@@ -197,6 +202,20 @@ export default function Index() {
       });
     } catch (error) {
       console.error('Erro ao compartilhar:', error);
+    }
+  };
+
+  const openRadioSite = async () => {
+    const url = 'https://89maravilhafm.com/site/pages/home/';
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.warn("Can't open URL:", url);
+      }
+    } catch (e) {
+      console.error('Erro ao abrir o link:', e);
     }
   };
 
@@ -240,11 +259,19 @@ export default function Index() {
 
       {/* CONTEÚDO PRINCIPAL */}
       <View style={styles.mainContent}>
-              <Image
-                source={require('../../assets/images/logocentro.png')} //DIMINUIR 
-                style={styles.logocentro}
-                resizeMode="contain"
-              />
+        <TouchableOpacity
+          onPress={openRadioSite}
+          accessibilityRole="link"
+          accessibilityLabel="Abrir site da rádio"
+          hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+        >
+          <Image
+            source={require('../../assets/images/logocentro.png')}
+            style={styles.logocentro}
+            resizeMode="contain"
+          />
+        </TouchableOpacity>
+
         <SocialLinks />
       </View>
 

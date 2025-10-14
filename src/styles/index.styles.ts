@@ -28,9 +28,6 @@ export const styles = StyleSheet.create({
     right: 0,
     height,
     backgroundColor: '#FF8000',
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
     elevation: 10,
   },
   sheetHeader: {
@@ -103,6 +100,7 @@ setaInicio: {
   marginTop: 2, 
   marginLeft:5
 },
+
 tabContainerBottom: {
   flexDirection: 'row',
   justifyContent: 'space-around',
@@ -210,7 +208,7 @@ contentArea: {
     borderRadius: 12,
     overflow: 'hidden',
     backgroundColor: 'black',
-    marginTop: 20,
+    marginTop: height * 0.15,
   },
   
   musicImage: { width: 400, height: 200, marginBottom: 10 },
