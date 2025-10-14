@@ -52,7 +52,6 @@ export default function Index() {
     extrapolate: 'clamp',
   });
 
-  // 🎯 PanResponder — apenas no header do BottomSheet
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) =>
@@ -269,30 +268,33 @@ export default function Index() {
           >
             <View style={styles.dragIndicator} />
 
-            <View style={styles.headerLeft}>
-              {!expanded && (
-                <>
-                  <TouchableOpacity onPress={togglePlay} style={styles.miniPlayButton}>
-                    {loading ? (
-                      <ActivityIndicator color="#FF8000" />
-                    ) : (
-                      <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color="#FF8000" />
-                    )}
-                  </TouchableOpacity>
-                  <Text style={styles.sheetTitleMinimized}>Ouça Ao Vivo</Text>
-                </>
-              )}
-            </View>
+            {/* 🎵 Mini player quando minimizado */}
+            {!expanded && (
+              <View style={styles.headerLeft}>
+                <TouchableOpacity onPress={togglePlay} style={styles.miniPlayButton}>
+                  {loading ? (
+                    <ActivityIndicator color="#FF8000" />
+                  ) : (
+                    <Ionicons name={isPlaying ? 'pause' : 'play'} size={28} color="#FF8000" />
+                  )}
+                </TouchableOpacity>
+                <Text style={styles.sheetTitleMinimized}>Ouça Ao Vivo</Text>
+              </View>
+            )}
 
-            <View
-              style={[
-                styles.arrowWrapper,
-                expanded ? styles.arrowWrapperExpanded : styles.arrowWrapperCollapsed,
-              ]}
-            >
-              <Ionicons name={expanded ? 'chevron-down' : 'chevron-up'} size={28} color="#fff" />
-            </View>
+            {!expanded && (
+              <View style={styles.arrowWrapperCollapsed}>
+                <Ionicons name="chevron-up" size={28} color="#fff" />
+              </View>
+            )}
           </TouchableOpacity>
+
+          {expanded && (
+            <TouchableOpacity onPress={toggleSheet} style={styles.inicioButton}>
+              <Text style={styles.inicioButtonText}>Recolher</Text>
+              <Ionicons name="chevron-down" size={20} color="#fff" style={styles.setaInicio}></Ionicons>
+            </TouchableOpacity>
+          )}
         </View>
 
         {expanded && (

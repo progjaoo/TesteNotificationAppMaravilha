@@ -1,27 +1,46 @@
-import { StyleSheet, Text, View } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
+import React from 'react';
+import { Linking, Text, TouchableOpacity, View } from 'react-native';
+import { styles } from '../styles/redesSociais.styles';
 
 export default function RedesSociais() {
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>ℹ️ Informações</Text>
-      <Text style={styles.text}>📞 Telefone: (21) 99999-9999</Text>
-      <Text style={styles.text}>📧 Email: contato@radiomaravilha.com</Text>
-      <Text style={styles.text}>📍 Endereço: Rua das Flores, 123 - Rio de Janeiro</Text>
-    </View>
+    
+      <View style={styles.overlay}>
+        <Text style={styles.title}>Siga nossas Redes Sociais</Text>
+        <Text style={styles.subtitle}>Fique por dentro de notícias, eventos e conteúdos.</Text>
+
+        <View style={styles.cardsContainer}>
+          {/* WhatsApp */}
+          <TouchableOpacity
+            style={[styles.card, styles.whatsapp]}
+            onPress={() => Linking.openURL('https://api.whatsapp.com/send?phone=5531999982089')}
+          >
+            <Ionicons name="logo-whatsapp" size={36} color="#fff" />
+            <Text style={styles.cardText}>Fale Conosco</Text>
+            <Text style={styles.cardSubtext}>(31) 99998-2089</Text>
+          </TouchableOpacity>
+
+          {/* Instagram */}
+          <TouchableOpacity
+            style={[styles.card, styles.instagram]}
+            onPress={() => Linking.openURL('https://www.instagram.com/radio89maravilha/')}
+          >
+            <Ionicons name="logo-instagram" size={36} color="#fff" />
+            <Text style={styles.cardText}>@radio89maravilha</Text>
+          </TouchableOpacity>
+
+          {/* YouTube */}
+          <TouchableOpacity
+            style={[styles.card, styles.youtube]}
+            onPress={() => Linking.openURL('https://www.youtube.com/@radio89maravilha')}
+          >
+            <Ionicons name="logo-youtube" size={36} color="#fff" />
+            <Text style={styles.cardText}>Nosso Canal</Text>
+            <Text style={styles.cardSubtext}>@radio89maravilha</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+
   );
 }
-
-
-const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#FFF', alignItems: 'center', padding: 20 },
-  title: { fontSize: 24, fontWeight: 'bold', color: '#FF8000', marginBottom: 20 },
-  text: { fontSize: 16, color: '#333', marginBottom: 8 },
-  button: {
-    backgroundColor: '#FF8000',
-    borderRadius: 8,
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    marginTop: 20,
-  },
-  buttonText: { color: '#FFF', fontWeight: 'bold', fontSize: 16 },
-});

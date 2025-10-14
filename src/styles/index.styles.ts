@@ -1,5 +1,5 @@
 // index.styles.ts
-import { Dimensions, StyleSheet } from 'react-native';
+import { Dimensions, Platform, StyleSheet } from 'react-native';
 
 const { height } = Dimensions.get('window');
 
@@ -77,7 +77,32 @@ export const styles = StyleSheet.create({
   },
 
 //ESTILOS DO BOTTOM SHEET
+inicioButton: {
+  position: 'absolute',
+  alignSelf: 'center',
+  top: 14,
+  backgroundColor: '#FF8C19',
+  flexDirection: 'row', 
+  alignItems: 'center', 
+  justifyContent: 'center',
+  paddingVertical: 10,
+  paddingHorizontal: 50, 
+  borderRadius: 22,
+  elevation: 3,
+},
 
+inicioButtonText: {
+  color: '#ffffff',
+  fontWeight: 'bold',
+  fontSize: 16,
+  marginRight: 10,
+  marginLeft:20 
+},
+
+setaInicio: {
+  marginTop: 2, 
+  marginLeft:5
+},
 tabContainerBottom: {
   flexDirection: 'row',
   justifyContent: 'space-around',
@@ -96,7 +121,7 @@ mainContentArea: {
 
 tabButton: {
   paddingVertical: 10,
-  paddingHorizontal: 30,
+  paddingHorizontal: 50,
   borderRadius: 20,
   backgroundColor: '#FF8C19',
   marginLeft:10
@@ -135,13 +160,31 @@ tabContainerBelow: {
   gap: 20,
 },
 
-  tabContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    marginTop: 10,
-    marginBottom:120,
-    
-  },
+tabContainer: Platform.select({
+    ios: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 20,
+      marginBottom: 160,
+      gap: 25,
+      paddingBottom: 10,
+      backgroundColor: '#FF8000'
+    },
+    android: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 10,
+      marginBottom: 130,
+      gap: 15,
+      backgroundColor: '#FF8000',
+    },
+    default: {
+      flexDirection: 'row',
+      justifyContent: 'center',
+      marginTop: 10,
+      marginBottom: 120,
+    },
+  }),
   
 contentArea: {
   flexGrow: 1,

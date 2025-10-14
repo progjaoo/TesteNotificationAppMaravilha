@@ -1,7 +1,8 @@
+// src/app/[id].tsx
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
-import { TouchableOpacity, View } from 'react-native';
-import { JSX } from 'react/jsx-runtime';
+import React from 'react';
+import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Informacoes from '../pages/informacoes';
 import RedesSociais from '../pages/redesSociais';
 
@@ -9,11 +10,9 @@ export default function Page() {
   const { id } = useLocalSearchParams();
   const router = useRouter();
 
-  const pages: Record<string, { title: string; component: JSX.Element }> = {
-    // '42': { title: 'Notícias', component: <Noticias /> },
-    // '43': { title: 'Programação', component: <Programacao /> },
+  const pages: Record<string, { title: string; component: React.ReactNode }> = {
     '44': { title: 'Informações', component: <Informacoes /> },
-    '45': { title: 'Redes Sociais', component: <RedesSociais/> },
+    '45': { title: 'Redes Sociais', component: <RedesSociais /> },
   };
 
   const current = pages[id as string] || { title: 'Página', component: <View /> };
@@ -22,14 +21,21 @@ export default function Page() {
     <View style={{ flex: 1 }}>
       <Stack.Screen
         options={{
-          title: current.title,
-          headerStyle: { backgroundColor: '#FF8000' },
-          headerTintColor: '#fff',
-          headerTitleAlign: 'center',
-          headerLeft: () => (
-            <TouchableOpacity onPress={() => router.back()} style={{ paddingLeft: 16 }}>
-              <Ionicons name="arrow-back" size={24} color="#fff" />
-            </TouchableOpacity>
+          header: () => (
+            <View style={styles.headerContainer}>
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={styles.backButton}
+                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+              >
+                <Ionicons name="arrow-back" size={28} color="#fff" />
+              </TouchableOpacity>
+
+              <Text style={styles.headerTitle}>{current.title}</Text>
+
+              {/* Espaço à direita para equilibrar o layout */}
+              <View style={styles.rightPlaceholder} />
+            </View>
           ),
         }}
       />
@@ -37,3 +43,33 @@ export default function Page() {
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  headerContainer: {
+    backgroundColor: '#FF8000',
+    height: Platform.OS === 'ios' ? 115 : 115, 
+    paddingTop: Platform.OS === 'ios' ? 40 : 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    position: 'relative',
+  },
+  backButton: {
+    position: 'absolute',
+    left: 16,
+    top: Platform.OS === 'ios' ? 65 : 60,
+  },
+  headerTitle: {
+    color: '#fff',
+    fontSize: 20,
+    fontWeight: '700',
+    top: Platform.OS === 'ios' ? 2:5
+  },
+  rightPlaceholder: {
+    position: 'absolute',
+    right: 16,
+    top: Platform.OS === 'ios' ? 48 : 34,
+    width: 28, 
+    height: 28,
+  },
+});
