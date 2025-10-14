@@ -7,10 +7,10 @@ export const styles = StyleSheet.create({
 //     alignItems: 'center',
     
 //   },
-//   backgroundImage: {
-//     resizeMode: 'cover',
-//     opacity: 0.9,
-//   },
+  backgroundImage: {
+    resizeMode: 'cover',
+    opacity: 0.9,
+  },
   overlay: {
     flex: 1,
     width: '100%',
