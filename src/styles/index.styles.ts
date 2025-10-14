@@ -75,6 +75,9 @@ export const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+
+//ESTILOS DO BOTTOM SHEET
+
 tabContainerBottom: {
   flexDirection: 'row',
   justifyContent: 'space-around',
@@ -95,7 +98,8 @@ tabButton: {
   paddingVertical: 10,
   paddingHorizontal: 30,
   borderRadius: 20,
-  backgroundColor: 'transparent',
+  backgroundColor: '#FF8C19',
+  marginLeft:10
 },
 
 tabActive: {
@@ -135,8 +139,8 @@ tabContainerBelow: {
     flexDirection: 'row',
     justifyContent: 'center',
     marginTop: 10,
-    borderBottomWidth: 1,
-    borderColor: 'rgba(255,255,255,0.3)',
+    marginBottom:120,
+    
   },
   
 contentArea: {

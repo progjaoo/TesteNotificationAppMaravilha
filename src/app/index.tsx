@@ -297,6 +297,33 @@ export default function Index() {
 
         {expanded && (
           <>
+            {/* CONTEÚDO */}
+            <View style={styles.contentArea}>
+              {activeTab === 'ouvir' ? (
+                <View style={styles.audioContainer}>
+                  <Image
+                    source={require('../../assets/images/musica.png')}
+                    style={styles.musicImage}
+                    resizeMode="contain"
+                  />
+                  <Text style={styles.musicTitle}>Nome da Música: {musicaAtual}</Text>
+                  <Text style={styles.musicSubtitle}>
+                    {'A Rádio de todas as Igrejas\nque toca o som do céu'}
+                  </Text>
+                  <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
+                    {loading ? (
+                      <ActivityIndicator color="#FF8000" />
+                    ) : (
+                      <Ionicons name={isPlaying ? 'pause' : 'play'} size={36} color="#FF8000" />
+                    )}
+                  </TouchableOpacity>
+                </View>
+              ) : (
+                <View style={styles.webviewContainer}>
+                  <WebView source={{ html: playerHTML }} allowsFullscreenVideo />
+                </View>
+              )}
+            </View>
             {/* TABS */}
             <View style={styles.tabContainer}>
               <TouchableOpacity
@@ -324,34 +351,6 @@ export default function Index() {
                   Assistir
                 </Text>
               </TouchableOpacity>
-            </View>
-
-            {/* CONTEÚDO */}
-            <View style={styles.contentArea}>
-              {activeTab === 'ouvir' ? (
-                <View style={styles.audioContainer}>
-                  <Image
-                    source={require('../../assets/images/musica.png')}
-                    style={styles.musicImage}
-                    resizeMode="contain"
-                  />
-                  <Text style={styles.musicTitle}>Nome da Música: {musicaAtual}</Text>
-                  <Text style={styles.musicSubtitle}>
-                    {'A Rádio de todas as Igrejas\nque toca o som do céu'}
-                  </Text>
-                  <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
-                    {loading ? (
-                      <ActivityIndicator color="#FF8000" />
-                    ) : (
-                      <Ionicons name={isPlaying ? 'pause' : 'play'} size={36} color="#FF8000" />
-                    )}
-                  </TouchableOpacity>
-                </View>
-              ) : (
-                <View style={styles.webviewContainer}>
-                  <WebView source={{ html: playerHTML }} allowsFullscreenVideo />
-                </View>
-              )}
             </View>
           </>
         )}
