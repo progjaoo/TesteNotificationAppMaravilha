@@ -344,6 +344,8 @@ export default function Index() {
                     if (isInvalido) {
                       return (
                         <Text style={[styles.musicSubtitle, { textAlign: 'center', marginTop: 10 }]}>
+                          89.1 - Rádio Maravilha FM{'\n'} 
+                          {'\n'}
                           A Rádio de todas as igrejas{'\n'}que toca o som do céu
                         </Text>
                       );

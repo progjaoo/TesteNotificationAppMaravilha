@@ -1,4 +1,3 @@
-// src/app/[id].tsx
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
@@ -14,10 +13,14 @@ export default function Page() {
   const pages: Record<string, { title: string; component: React.ReactNode }> = {
     '44': { title: 'Informações', component: <Informacoes /> },
     '45': { title: 'Redes Sociais', component: <RedesSociais /> },
-    '46': { title: 'Sobre Nós', component: <SobreNos/> },
+    '46': { title: 'Sobre Nós', component: <SobreNos /> },
   };
 
   const current = pages[id as string] || { title: 'Página', component: <View /> };
+
+  const handleGoBack = () => {
+    router.replace('/'); 
+  };
 
   return (
     <View style={{ flex: 1 }}>
@@ -26,7 +29,7 @@ export default function Page() {
           header: () => (
             <View style={styles.headerContainer}>
               <TouchableOpacity
-                onPress={() => router.back()}
+                onPress={handleGoBack}
                 style={styles.backButton}
                 hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
               >
@@ -34,8 +37,6 @@ export default function Page() {
               </TouchableOpacity>
 
               <Text style={styles.headerTitle}>{current.title}</Text>
-
-              {/* Espaço à direita para equilibrar o layout */}
               <View style={styles.rightPlaceholder} />
             </View>
           ),
@@ -49,7 +50,7 @@ export default function Page() {
 const styles = StyleSheet.create({
   headerContainer: {
     backgroundColor: '#FF8000',
-    height: Platform.OS === 'ios' ? 115 : 115, 
+    height: Platform.OS === 'ios' ? 115 : 115,
     paddingTop: Platform.OS === 'ios' ? 40 : 20,
     flexDirection: 'row',
     alignItems: 'center',
@@ -65,13 +66,13 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 20,
     fontWeight: '700',
-    top: Platform.OS === 'ios' ? 2:5
+    top: Platform.OS === 'ios' ? 2 : 5,
   },
   rightPlaceholder: {
     position: 'absolute',
     right: 16,
     top: Platform.OS === 'ios' ? 48 : 34,
-    width: 28, 
+    width: 28,
     height: 28,
   },
 });
