@@ -14,7 +14,6 @@ import { useEffect } from 'react';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
-// 🟠 Este comando PRECISA ficar aqui fora, no escopo global:
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
@@ -24,7 +23,6 @@ export default function RootLayout() {
 
   useEffect(() => {
     if (loaded) {
-      // Agora sim, quando as fontes terminam de carregar, escondemos a splash nativa
       SplashScreen.hideAsync();
     }
   }, [loaded]);
