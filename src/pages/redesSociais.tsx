@@ -14,7 +14,7 @@ export default function RedesSociais() {
           }
         >
           <Image
-            source={require('../../assets/images/rede-social-wpp.png')}
+            source={require('../../assets/rede-social-wpp.png')}
             style={styles.socialImage}
             resizeMode="contain"
           />
@@ -27,7 +27,7 @@ export default function RedesSociais() {
           }
         >
           <Image
-            source={require('../../assets/images/rede-social-insta.png')}
+            source={require('../../assets/rede-social-insta.png')}
             style={styles.socialImage}
             resizeMode="contain"
           />
@@ -40,7 +40,7 @@ export default function RedesSociais() {
           }
         >
           <Image
-            source={require('../../assets/images/rede-social-youtube.png')}
+            source={require('../../assets/rede-social-youtube.png')}
             style={styles.socialImage}
             resizeMode="contain"
           />

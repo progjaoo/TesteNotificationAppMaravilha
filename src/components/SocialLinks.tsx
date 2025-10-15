@@ -16,14 +16,14 @@ export default function SocialLinks() {
     <View style={styles.container}>
       <TouchableOpacity onPress={() => openLink('https://api.whatsapp.com/send?phone=5531999982089')}>
         <Image
-          source={require('../../assets/images/whatsapp.png')}
+          source={require('../../assets/whatsapp.png')}
           style={styles.iconImage}
         />
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => openLink('https://www.instagram.com/radio89maravilha/')}>
         <Image
-          source={require('../../assets/images/instagram.png')}
+          source={require('../../assets/instagram.png')}
           style={styles.iconImage}
         />
       </TouchableOpacity>

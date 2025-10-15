@@ -52,7 +52,6 @@ export default function Index() {
     outputRange: [0, 24],
     extrapolate: 'clamp',
   });
-
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) =>
@@ -100,7 +99,6 @@ export default function Index() {
     })
   ).current;
 
-  // ⚙️ Config inicial
   useEffect(() => {
     (async () => {
       try {
@@ -245,7 +243,7 @@ export default function Index() {
               </TouchableOpacity>
 
               <Image
-                source={require('../../assets/images/maravilhabranco.png')}
+                source={require('../../assets/maravilhabranco.png')}
                 style={styles.logoHeader}
               />
 
@@ -257,7 +255,6 @@ export default function Index() {
         }}
       />
 
-      {/* CONTEÚDO PRINCIPAL */}
       <View style={styles.mainContent}>
         <TouchableOpacity
           onPress={openRadioSite}
@@ -266,7 +263,7 @@ export default function Index() {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Image
-            source={require('../../assets/images/logocentro.png')}
+            source={require('../../assets/sorteio.png')}
             style={styles.logocentro}
             resizeMode="contain"
           />
@@ -331,14 +328,38 @@ export default function Index() {
               {activeTab === 'ouvir' ? (
                 <View style={styles.audioContainer}>
                   <Image
-                    source={require('../../assets/images/musica.png')}
+                    source={require('../../assets/musica.png')}
                     style={styles.musicImage}
                     resizeMode="contain"
                   />
-                  <Text style={styles.musicTitle}>Nome da Música: {musicaAtual}</Text>
-                  <Text style={styles.musicSubtitle}>
-                    {'A Rádio de todas as Igrejas\nque toca o som do céu'}
-                  </Text>
+                  {(() => {
+                    const nomeMusica = musicaAtual?.trim() || '';
+
+                    const isInvalido =
+                      nomeMusica === '-' ||
+                      nomeMusica === '' ||
+                      nomeMusica.toLowerCase().includes('radio maravilha fm') ||
+                      nomeMusica.startsWith('891');
+
+                    if (isInvalido) {
+                      return (
+                        <Text style={[styles.musicSubtitle, { textAlign: 'center', marginTop: 10 }]}>
+                          A Rádio de todas as igrejas{'\n'}que toca o som do céu
+                        </Text>
+                      );
+                    }
+                    const [musica, artista] = nomeMusica.split(' - ');
+                    return (
+                      <>
+                        <Text style={styles.musicTitle}>{musica?.trim() || ''}</Text>
+                        {artista ? (
+                          <Text style={styles.musicArtist}>{artista.trim()}</Text>
+                        ) : null}
+                      </>
+                    );
+                  })()}
+
+
                   <TouchableOpacity onPress={togglePlay} style={styles.playButton}>
                     {loading ? (
                       <ActivityIndicator color="#FF8000" />

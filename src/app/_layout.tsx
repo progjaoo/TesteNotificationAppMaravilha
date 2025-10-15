@@ -1,4 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useFonts } from 'expo-font';
+
 import {
 	DrawerContentComponentProps,
 	DrawerContentScrollView,
@@ -7,8 +9,18 @@ import {
 } from '@react-navigation/drawer';
 import { usePathname, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect } from 'react';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+
+SplashScreen.setOptions({
+  duration: 1000,
+  fade: true,
+});
+
+SplashScreen.preventAutoHideAsync();
+
 
 function CustomDrawerContent(props: DrawerContentComponentProps) {
 	const menuItems = [
@@ -22,7 +34,7 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 		<DrawerContentScrollView {...props}>
 			<View style={{ padding: 16, alignItems: 'center' }}>
 				<Image
-					source={require('@/assets/images/logomaravilha.png')}
+					source={require('@/assets/logomaravilha.png')}
 					style={{ width: 150, height: 100 }}
 				/>
 			</View>
@@ -70,6 +82,19 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
 }
 
 export default function RootLayout() {
+const [loaded] = useFonts({
+    SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
+  });
+
+  useEffect(() => {
+    if (loaded) {
+      SplashScreen.hide();
+    }
+  }, [loaded]);
+
+  if (!loaded) {
+    return null;
+  }
 	return (
 		<GestureHandlerRootView style={{ flex: 1 }}>
 			<Drawer
@@ -105,4 +130,5 @@ export default function RootLayout() {
 			</Drawer>
 		</GestureHandlerRootView>
 	);
+
 }
