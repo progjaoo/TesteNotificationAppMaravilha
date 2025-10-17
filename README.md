@@ -1,4 +1,4 @@
-# DOCUMENTAÇÃO DO APLICATIVO — MaravilhaApp
+# DOCUMENTAÇÃO DO APLICATIVO — Rádio Maravilha 89.1 FM
 
 ## 1. Visão Geral
 
