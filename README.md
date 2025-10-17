@@ -50,17 +50,21 @@ MaravilhaApp/
 ├── tsconfig.json
 └── README.md
 ```
-3. Tecnologias Utilizadas
-| Categoria       | Tecnologia                                           | Descrição                                   |
-| --------------- | ---------------------------------------------------- | ------------------------------------------- |
-| **Framework**   | React Native (Expo)                                  | Desenvolvimento multiplataforma Android/iOS |
-| **Navegação**   | Expo Router / DrawerNavigator                        | Roteamento e menu lateral                   |
-| **Player**      | Expo AV                                              | Controle e reprodução de áudio              |
-| **Vídeo**       | React Native WebView                                 | Player de vídeo integrado                   |
-| **UI e Ícones** | @expo/vector-icons, Ionicons, MaterialCommunityIcons | Ícones e interface visual                   |
-| **Fonte**       | SpaceMono-Regular.ttf                                | Tipografia personalizada                    |
-| **API**         | Fetch API + JSON Parsing                             | Consumo da API de streaming                 |
-| **Animações**   | Animated API                                         | Bottom Sheet e transições suaves            |
+## 3. Tecnologias Utilizadas
+
+| **Categoria** | **Tecnologia** | **Descrição** |
+|:--------------:|:---------------|:---------------|
+|  **Framework** | React Native (Expo) | Desenvolvimento multiplataforma Android/iOS |
+|  **Navegação** | Expo Router / DrawerNavigator | Gerenciamento de rotas e menu lateral |
+|  **Player** | Expo AV | Controle e reprodução de áudio |
+|  **Vídeo** | React Native WebView | Player de vídeo integrado para transmissões ao vivo |
+|  **UI e Ícones** | @expo/vector-icons, Ionicons, MaterialCommunityIcons | Ícones e interface visual |
+|  **Fonte** | SpaceMono-Regular.ttf | Tipografia personalizada e legível |
+|  **API** | Fetch API + JSON Parsing | Consumo da API de streaming da rádio |
+|  **Animações** | Animated API (React Native) | Transições suaves e Bottom Sheet animado |
+|  **Tipagem** | TypeScript | Tipagem estática e maior confiabilidade no código |
+|  **Performance** | React Compiler + Expo Dev Client | Melhor desempenho em runtime e build |
+
 
 ##  4. Principais Funcionalidades
 ### 4.1 Tela Principal (index.tsx)
