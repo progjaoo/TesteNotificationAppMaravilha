@@ -32,7 +32,7 @@ export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
-        initialRouteName="splash"
+        initialRouteName="index"
         drawerContent={CustomDrawerContent}
         screenOptions={{
           drawerActiveTintColor: 'red',
@@ -40,14 +40,14 @@ export default function RootLayout() {
           drawerStyle: { backgroundColor: '#FF8000' },
         }}
       >
-        <Drawer.Screen
+        {/* <Drawer.Screen
           name="splash"
           options={{
             headerShown: false,
             drawerItemStyle: { display: 'none' },
             swipeEnabled: false,
           }}
-        />
+        /> */}
 
         <Drawer.Screen
           name="index"

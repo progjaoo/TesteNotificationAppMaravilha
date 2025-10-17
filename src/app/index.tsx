@@ -107,7 +107,7 @@ export default function Index() {
           staysActiveInBackground: true,
           playsInSilentModeIOS: true,
           shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: false,
+          playThroughEarpieceAndroid: false
         });
       } catch (e) {
         console.log('Erro ao configurar áudio:', e);
@@ -204,7 +204,7 @@ export default function Index() {
   };
 
   const openRadioSite = async () => {
-    const url = 'https://89maravilhafm.com/site/pages/home/';
+    const url = 'https://89maravilhafm.com/sorteio/';
     try {
       const supported = await Linking.canOpenURL(url);
       if (supported) {

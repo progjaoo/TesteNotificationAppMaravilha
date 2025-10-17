@@ -6,7 +6,7 @@
     "orientation": "portrait",
     "icon": "./assets/logomaravilha.png",
     "scheme": "maravilhaapp",
-    "userInterfaceStyle": "automatic",
+    "userInterfaceStyle": "light",
     "newArchEnabled": true,
     "splash": {
       "image": "./assets/logomaravilha.png",
@@ -14,7 +14,10 @@
       "backgroundColor": "#FF8000"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+       "infoPlist": { //BACKGROUND 
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "edgeToEdgeEnabled": true,
@@ -28,14 +31,6 @@
     },
     "plugins": [
       "expo-router"
-      // [
-      //   "expo-splash-screen",
-      //   {
-      //     "backgroundColor": "#FF8000",
-      //     "image": "./assets/logomaravilha.png",
-      //     "resizeMode": "contain"
-      //   }
-      // ]
     ],
     "experiments": {
       "typedRoutes": true,
