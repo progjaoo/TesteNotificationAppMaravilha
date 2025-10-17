@@ -49,7 +49,7 @@ MaravilhaApp/
 ├── package.json
 ├── tsconfig.json
 └── README.md
-
+```
 ⚙️ 3. Tecnologias Utilizadas
 | Categoria       | Tecnologia                                           | Descrição                                   |
 | --------------- | ---------------------------------------------------- | ------------------------------------------- |
