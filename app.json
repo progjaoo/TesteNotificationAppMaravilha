@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rádio Maravilha FM",
     "slug": "maravilhafmbh",
-    "version": "7.0.0",
+    "version": "7.0.1",
     "orientation": "portrait",
     "icon": "./assets/logomaravilha.png",
     "scheme": "maravilhaapp",

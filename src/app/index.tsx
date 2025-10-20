@@ -206,7 +206,6 @@ export default function Index() {
     console.error('Erro ao compartilhar:', error);
   }
 };
-
   const openRadioSite = async () => {
     const url = 'https://89maravilhafm.com/sorteio/';
     try {
