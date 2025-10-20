@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Rádio Maravilha",
-    "slug": "maravilhaapp",
-    "version": "1.0.0",
+    "name": "Rádio Maravilha FM",
+    "slug": "maravilhafmbh",
+    "version": "7.0.0",
     "orientation": "portrait",
     "icon": "./assets/logomaravilha.png",
     "scheme": "maravilhaapp",
@@ -14,15 +14,26 @@
       "backgroundColor": "#FF8000"
     },
     "ios": {
-      "supportsTablet": true,
-       "infoPlist": { //BACKGROUND 
-        "ITSAppUsesNonExemptEncryption": false
-      }
-    },
+    "supportsTablet": true,
+    "bundleIdentifier": "com.claitonbarbosa.89maravilhafm",
+    "infoPlist": {
+      "UIBackgroundModes": [
+        "audio"
+      ],
+      "AVAudioSessionCategory": "playback",
+      "AVAudioSessionCategoryOptions": [
+        "mixWithOthers",
+        "duckOthers",
+        "allowBluetooth",
+        "allowBluetoothA2DP"
+      ],
+      "ITSAppUsesNonExemptEncryption": false
+    }
+  },
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.joaomv.MaravilhaApp"
+      "package": "com.claitonbarbosa.maravilhafmbh"
     },
     "web": {
       "bundler": "metro",
@@ -40,7 +51,7 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "8a0a7cb4-6006-4644-826f-47a44833316e"
+        "projectId": "72620fb9-520c-4d72-985b-d32125b8eade"
       }
     }
   }

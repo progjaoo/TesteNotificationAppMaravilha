@@ -193,15 +193,19 @@ export default function Index() {
   }, []);
 
   const handleShare = async () => {
-    try {
-      await Share.share({
-        message:
-          '🎶 Ouça agora a Rádio Maravilha - 89.1 FM! Baixe o app ou ouça online: https://radio-maravilha.com',
-      });
-    } catch (error) {
-      console.error('Erro ao compartilhar:', error);
-    }
-  };
+  try {
+    const iosLink = 'https://apps.apple.com/app/id6748237407'; 
+    const androidLink = 'https://play.google.com/store/apps/details?id=com.claitonbarbosa.maravilhafmbh'; 
+
+    const appLink = Platform.OS === 'ios' ? iosLink : androidLink;
+
+    await Share.share({
+      message: `🎶 Ouça agora a Rádio Maravilha - 89.1 FM! Baixe o app no seu celular: ${appLink}`,
+    });
+  } catch (error) {
+    console.error('Erro ao compartilhar:', error);
+  }
+};
 
   const openRadioSite = async () => {
     const url = 'https://89maravilhafm.com/sorteio/';
