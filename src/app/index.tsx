@@ -109,6 +109,7 @@ export default function Index() {
           shouldDuckAndroid: false,
           playThroughEarpieceAndroid: false
         });
+      await togglePlay();
       } catch (e) {
         console.log('Erro ao configurar áudio:', e);
       }
@@ -207,7 +208,7 @@ export default function Index() {
   }
 };
   const openRadioSite = async () => {
-    const url = 'https://89maravilhafm.com/sorteio/';
+    const url = 'https://89maravilhafm.com/site/pages/home/';
     try {
       const supported = await Linking.canOpenURL(url);
       if (supported) {
@@ -266,7 +267,7 @@ export default function Index() {
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
           <Image
-            source={require('../../assets/sorteio.png')}
+            source={require('../../assets/logocentro.png')}
             style={styles.logocentro}
             resizeMode="contain"
           />

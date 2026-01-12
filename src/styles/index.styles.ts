@@ -217,7 +217,7 @@ contentArea: {
     marginTop: height * 0.15,
   },
   musicImage: { width: 400, height: 200, marginBottom: 10 },
-  logocentro: { width: 500, height: 350, marginBottom: 0 },
+  logocentro: { width: 280, height: 350, marginBottom: 0 },
   musicTitle: { color: 'white', fontWeight: 'bold', fontSize: 20, paddingTop: 20 },
   musicSubtitle: { color: 'white', fontSize: 18,  marginTop: 5, textAlign: 'center' },
 });

@@ -14,21 +14,21 @@ export default function SocialLinks() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => openLink('https://api.whatsapp.com/send?phone=5531999982089')}>
+      <TouchableOpacity onPress={() => Linking.openURL('https://api.whatsapp.com/send?phone=5531999982089')}>
         <Image
           source={require('../../assets/whatsapp.png')}
           style={styles.iconImage}
         />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => openLink('https://www.instagram.com/radio89maravilha/')}>
+      <TouchableOpacity onPress={() => Linking.openURL('https://www.instagram.com/radio89maravilha/')}>
         <Image
           source={require('../../assets/instagram.png')}
           style={styles.iconImage}
         />
       </TouchableOpacity>
 
-      <TouchableOpacity onPress={() => openLink('https://www.youtube.com/@radio89maravilha')}>
+      <TouchableOpacity onPress={() => Linking.openURL('https://www.youtube.com/@radio89maravilha')}>
         <Ionicons
           name="logo-youtube"
           size={32}
@@ -45,7 +45,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     width: '100%',
-    marginTop: 40,
+    marginTop: 0,
     position: 'relative', 
     bottom: 10,
   },
