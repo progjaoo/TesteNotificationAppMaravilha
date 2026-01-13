@@ -2,7 +2,7 @@
   "expo": {
     "name": "Rádio Maravilha FM",
     "slug": "maravilhafmbh",
-    "version": "7.0.1",
+    "version": "7.0.2",
     "orientation": "portrait",
     "icon": "./assets/logomaravilha.png",
     "scheme": "maravilhaapp",
@@ -33,7 +33,16 @@
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
-      "package": "com.claitonbarbosa.maravilhafmbh"
+      "package": "com.claitonbarbosa.maravilhafmbh",
+      "permissions": [
+          "FOREGROUND_SERVICE",
+          "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+          "WAKE_LOCK",
+          "INTERNET",
+          "BLUETOOTH_CONNECT",
+          "BLUETOOTH",
+          "ACCESS_NETWORK_STATE"
+      ]
     },
     "web": {
       "bundler": "metro",
