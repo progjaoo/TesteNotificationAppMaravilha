@@ -70,7 +70,7 @@ export default function RootLayout() {
         />
 
         <Drawer.Screen
-          name="detalheSorteio"
+          name="detalhesSorteio"
           options={{
             drawerItemStyle: { display: 'none' },
           }}
