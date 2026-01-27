@@ -2,9 +2,11 @@ import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useLocalSearchParams, useRouter } from 'expo-router';
 import React from 'react';
 import { Platform, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import Consultas from '../pages/consultas';
 import Informacoes from '../pages/informacoes';
 import RedesSociais from '../pages/redesSociais';
 import SobreNos from '../pages/sobrenos';
+import Sorteios from '../pages/sorteios';
 
 export default function Page() {
   const { id } = useLocalSearchParams();
@@ -14,6 +16,8 @@ export default function Page() {
     '44': { title: 'Informações', component: <Informacoes /> },
     '45': { title: 'Redes Sociais', component: <RedesSociais /> },
     '46': { title: 'Sobre Nós', component: <SobreNos /> },
+    '47': { title: 'Sorteios', component: <Sorteios /> },
+    '48': { title: 'Consultar Solteios', component: <Consultas /> }
   };
 
   const current = pages[id as string] || { title: 'Página', component: <View /> };

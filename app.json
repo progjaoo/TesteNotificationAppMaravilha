@@ -41,7 +41,8 @@
           "INTERNET",
           "BLUETOOTH_CONNECT",
           "BLUETOOTH",
-          "ACCESS_NETWORK_STATE"
+          "ACCESS_NETWORK_STATE",
+          "SCHEDULE_EXACT_ALARM"
       ]
     },
     "web": {
@@ -50,7 +51,11 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "expo-router"
+      "expo-router",
+      "expo-notifications",{
+        "defaultChannel": "default",
+        "enableBackgroundRemoteNotifications": true
+      }
     ],
     "experiments": {
       "typedRoutes": true,

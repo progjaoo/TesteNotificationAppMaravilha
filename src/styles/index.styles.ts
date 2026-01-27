@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
   shareButton: { position: 'absolute', right: 20, top: 55 },
   logoHeader: { width: 160, height: 150, resizeMode: 'contain', marginBottom: 10 },
   
-  mainContent: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  mainContent: { flex: 1, justifyContent: 'center', alignItems: 'center', marginBottom: 50},
   
   bottomSheet: {
     position: 'absolute',
@@ -220,4 +220,53 @@ contentArea: {
   logocentro: { width: 280, height: 350, marginBottom: 0 },
   musicTitle: { color: 'white', fontWeight: 'bold', fontSize: 20, paddingTop: 20 },
   musicSubtitle: { color: 'white', fontSize: 18,  marginTop: 5, textAlign: 'center' },
+
+  sorteioAviso: {
+  width: '85%',
+  backgroundColor: '#fff',
+  borderRadius: 14,
+  padding: 14,
+  marginLeft: '7.5%',
+  marginTop: 20,
+  shadowColor: '#000',
+  shadowOpacity: 0.3,
+  shadowRadius: 6,
+  elevation: 5,
+},
+sorteioAvisoHeader: {
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+  marginBottom: 8,
+},
+sorteioAvisoTitulo: {
+  color: '#000',
+  fontSize: 16,
+  fontWeight: 'bold',
+  flex: 1,
+  marginRight: 10,
+},
+sorteioAvisoBody: {
+  flexDirection: 'row',
+  alignItems: 'center',
+},
+sorteioAvisoDescricao: {
+  color: '#000',
+  fontSize: 13,
+  flex: 1,
+  marginRight: 10,
+},
+
+sorteioAvisoBotao: {
+  backgroundColor: '#FF8000',
+  paddingHorizontal: 14,
+  paddingVertical: 8,
+  borderRadius: 20,
+},
+
+sorteioAvisoBotaoText: {
+  color: '#fff',
+  fontWeight: 'bold',
+  fontSize: 12,
+},
 });

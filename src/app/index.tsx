@@ -1,7 +1,7 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { DrawerActions } from '@react-navigation/native';
 import { Audio } from 'expo-av';
-import { Stack, useNavigation } from 'expo-router';
+import { router, Stack, useNavigation } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
   ActivityIndicator,
@@ -37,6 +37,9 @@ export default function Index() {
   const [genero, setGenero] = useState('');
   const [interprete, setInterprete] = useState('');
   const [capa, setCapa] = useState<string | null>(null);
+
+  const [showSorteioBanner, setShowSorteioBanner] = useState(false);
+  const [sorteioAberto, setSorteioAberto] = useState<any>(null);
 
   const getSheetPositionCollapsed = () =>
     Platform.select({
@@ -193,6 +196,25 @@ export default function Index() {
     }).start();
   }, []);
 
+  useEffect(() => {
+    const checkSorteioAberto = async () => {
+      try {
+        const res = await fetch('https://grupogtf.com.br/89fm/apisorteio/sorteios/aberto.php');
+        const json = await res.json();
+
+        if (json?.existe) {
+          setSorteioAberto(json);
+          setShowSorteioBanner(true);
+        }
+      
+      } catch (e) {
+        console.log('Erro ao verificar sorteio:', e);
+      }
+    };
+
+    checkSorteioAberto();
+  }, []);
+
   const handleShare = async () => {
   try {
     const iosLink = 'https://apps.apple.com/app/id6748237407'; 
@@ -258,14 +280,47 @@ export default function Index() {
           ),
         }}
       />
+        {showSorteioBanner && sorteioAberto && (
+          <View style={styles.sorteioAviso}>
+            
+            {/* Header do aviso */}
+            <View style={styles.sorteioAvisoHeader}>
+              <Text style={styles.sorteioAvisoTitulo}>
+                Novo Sorteio na 89 Maravilha
+              </Text>
 
+              <TouchableOpacity onPress={() => setShowSorteioBanner(false)}>
+                <Ionicons name="close" size={18} color="#000" />
+              </TouchableOpacity>
+            </View>
+
+            {/* Corpo */}
+            <View style={styles.sorteioAvisoBody}>
+              <Text style={styles.sorteioAvisoDescricao}>
+                Se inscreva no sorteio agora!
+              </Text>
+
+              <TouchableOpacity
+                style={styles.sorteioAvisoBotao}
+                onPress={() => {
+                  setShowSorteioBanner(false);
+                  router.push('/47');                
+                }}
+              >
+                <Text style={styles.sorteioAvisoBotaoText}>PARTICIPE</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+      )}
       <View style={styles.mainContent}>
+        
         <TouchableOpacity
           onPress={openRadioSite}
           accessibilityRole="link"
           accessibilityLabel="Abrir site da rádio"
           hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
         >
+        
           <Image
             source={require('../../assets/logocentro.png')}
             style={styles.logocentro}

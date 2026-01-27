@@ -13,6 +13,9 @@ import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import AppHeader from '../components/AppHeader';
+import { useNotificationListener, useNotificationNavigation } from '../services/notifications';
+import { initPush } from '../services/push';
 
 SplashScreen.preventAutoHideAsync();
 
@@ -21,9 +24,13 @@ export default function RootLayout() {
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
+  useNotificationListener();
+  useNotificationNavigation();
+
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
+      initPush();
     }
   }, [loaded]);
 
@@ -33,22 +40,14 @@ export default function RootLayout() {
     <GestureHandlerRootView style={{ flex: 1 }}>
       <Drawer
         initialRouteName="index"
-        drawerContent={CustomDrawerContent}
+        drawerContent={(props) => <CustomDrawerContent {...props} />}
         screenOptions={{
           drawerActiveTintColor: 'red',
           drawerHideStatusBarOnOpen: true,
           drawerStyle: { backgroundColor: '#FF8000' },
+          header: () => <AppHeader />,
         }}
       >
-        {/* <Drawer.Screen
-          name="splash"
-          options={{
-            headerShown: false,
-            drawerItemStyle: { display: 'none' },
-            swipeEnabled: false,
-          }}
-        /> */}
-
         <Drawer.Screen
           name="index"
           options={{
@@ -63,6 +62,21 @@ export default function RootLayout() {
         />
 
         <Drawer.Screen
+          name="cadastroParticipante"
+          options={{
+            drawerItemStyle: { display: 'none' },
+            title: 'Cadastro para Sorteio',
+          }}
+        />
+
+        <Drawer.Screen
+          name="detalheSorteio"
+          options={{
+            drawerItemStyle: { display: 'none' },
+          }}
+        />
+
+        <Drawer.Screen
           name="[id]"
           options={{
             drawerItemStyle: { display: 'none' },
@@ -73,6 +87,7 @@ export default function RootLayout() {
   );
 }
 
+/* 🔥 DRAWER CUSTOMIZADO */
 function CustomDrawerContent(props: DrawerContentComponentProps) {
   const router = useRouter();
   const pathname = usePathname();
@@ -80,6 +95,8 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
   const menuItems = [
     { id: 45, title: 'Redes Sociais', icon: 'globe' },
     { id: 46, title: 'Sobre Nós', icon: 'information-circle-outline' },
+    { id: 47, title: 'Sorteios', icon: 'calendar' },
+    { id: 48, title: 'Consultar Sorteios', icon: 'search' }
   ];
 
   return (
@@ -94,11 +111,14 @@ function CustomDrawerContent(props: DrawerContentComponentProps) {
       <DrawerItemList {...props} />
 
       <View style={{ padding: 16, paddingTop: 40 }}>
-        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>Opções</Text>
+        <Text style={{ fontSize: 20, fontWeight: 'bold', color: '#fff' }}>
+          Opções
+        </Text>
       </View>
 
       {menuItems.map((item) => {
         const isActive = pathname === `/${item.id}`;
+
         return (
           <DrawerItem
             key={item.id}
