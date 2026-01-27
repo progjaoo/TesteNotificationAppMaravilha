@@ -3,6 +3,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 /**
  * Permite exibir notificações mesmo com o app aberto (foreground)
  */
@@ -47,6 +48,15 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
 
   console.log('✅ Expo Push Token:', token);
 
+  if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF8000',
+    });
+  }
+
   return token;
 }
 
@@ -73,10 +83,10 @@ export function useNotificationNavigation() {
         const data = response.notification.request.content.data;
 
         if (data?.tipo === 'NOVO_SORTEIO' && data.sorteio_id) {
-          router.push(`/sorteio/${data.sorteio_id}`);
+          router.push(`/detalhesSorteio?id=${data.sorteio_id}`);
         }
       });
 
     return () => subscription.remove();
-  }, []);
+  }, [router]);
 }
