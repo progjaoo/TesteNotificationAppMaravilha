@@ -14,6 +14,8 @@ export async function initPush() {
       return;
     }
 
+    console.log(`📡 Tentando registrar token no servidor para plataforma: ${Platform.OS.toUpperCase()}`);
+
     await api.post('/push/register.php', {
       token,
       plataforma: Platform.OS.toUpperCase(),

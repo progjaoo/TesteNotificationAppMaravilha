@@ -59,3 +59,29 @@ Verifique a resposta do Expo e marque os tokens como `ativo = 0` na tabela `disp
 
 ## 4. Redundância em `Criar.php`
 O script `Criar.php` chama `enviarPushNovoSorteio()` e logo em seguida faz uma chamada HTTP para `enviar.php`. Se ambas as funções fazem o envio via Expo, você está enviando notificações duplicadas para todos os usuários. Recomenda-se manter apenas uma forma de envio.
+
+---
+
+# Configuração de Produção (IMPORTANTE)
+
+Se as notificações funcionam no **Expo Go** mas não no **APK/Standalone**, o motivo mais provável é a falta de configuração do **Firebase Cloud Messaging (FCM)**.
+
+### Por que isso acontece?
+O Expo Go usa as credenciais da própria Expo para enviar notificações. No entanto, quando você builda seu próprio APK, o Google exige que você tenha seu próprio projeto no Firebase para autorizar o envio de mensagens para o seu pacote (`com.claitonbarbosa.maravilhafmbh`).
+
+### Passos para corrigir:
+1. **Criar Projeto no Firebase**: Vá ao console do Firebase e crie um projeto.
+2. **Adicionar App Android**: Adicione um app Android com o pacote `com.claitonbarbosa.maravilhafmbh`.
+3. **Baixar `google-services.json`**: Coloque este arquivo na raiz do seu projeto React Native.
+4. **Atualizar `app.json`**:
+   ```json
+   "android": {
+     "package": "com.claitonbarbosa.maravilhafmbh",
+     "googleServicesFile": "./google-services.json",
+     "permissions": [...]
+   }
+   ```
+5. **Configurar Credenciais no Expo**: Rode `eas credentials` no seu terminal e selecione Android. Siga os passos para enviar a "Server Key" ou o arquivo JSON da conta de serviço do Firebase para a Expo.
+6. **Gerar novo Build**: Após essas configurações, você deve gerar um novo APK (`eas build -p android`).
+
+Sem o arquivo `google-services.json` configurado no `app.json`, as notificações **não chegarão** ao aplicativo instalado (APK).
