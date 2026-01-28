@@ -1,6 +1,11 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { DrawerActions } from '@react-navigation/native';
-import { Audio } from 'expo-av';
+import TrackPlayer, {
+  AppKilledPlaybackBehavior,
+  Capability,
+  State,
+  usePlaybackState,
+} from 'react-native-track-player';
 import { router, Stack, useNavigation } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -28,9 +33,10 @@ export default function Index() {
   const translateY = useRef(new Animated.Value(height * 0.8)).current;
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'ouvir' | 'assistir'>('ouvir');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const soundRef = useRef<Audio.Sound | null>(null);
+
+  const playbackState = usePlaybackState();
+  const isPlaying = playbackState.state === State.Playing;
+  const loading = playbackState.state === State.Buffering || playbackState.state === State.Loading;
 
   const [musicaAtual, setMusicaAtual] = useState('-');
   const [titulo, setTitulo] = useState('');
@@ -103,20 +109,42 @@ export default function Index() {
   ).current;
 
   useEffect(() => {
-    (async () => {
+    const setupPlayer = async () => {
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: true,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: false
+        try {
+          await TrackPlayer.setupPlayer();
+        } catch (e) {
+          // Player already setup
+        }
+
+        await TrackPlayer.updateOptions({
+          android: {
+            appKilledPlaybackBehavior: AppKilledPlaybackBehavior.StopPlaybackAndRemoveNotification,
+          },
+          capabilities: [
+            Capability.Play,
+            Capability.Pause,
+            Capability.Stop,
+          ],
+          compactCapabilities: [Capability.Play, Capability.Pause],
         });
-      await togglePlay();
+
+        await TrackPlayer.reset();
+        await TrackPlayer.add({
+          id: 'radio-maravilha',
+          url: 'https://stm19.srvstm.com:7080/stream',
+          title: 'Rádio Maravilha - 89.1 FM',
+          artist: 'Ao Vivo',
+          artwork: require('../../assets/logomaravilha.png'),
+        });
+
+        await TrackPlayer.play();
       } catch (e) {
         console.log('Erro ao configurar áudio:', e);
       }
-    })();
+    };
+
+    setupPlayer();
 
     const fetchRadioInfo = async () => {
       const info = await getRadioInfo();
@@ -125,6 +153,16 @@ export default function Index() {
         setTitulo(info.titulo || '');
         setGenero(info.genero || '');
         setCapa(info.capa_musica || null);
+
+        try {
+          await TrackPlayer.updateMetadataForTrack(0, {
+            title: info.musica_atual || 'Rádio Maravilha - 89.1 FM',
+            artist: info.titulo || 'Ao Vivo',
+            artwork: info.capa_musica || require('../../assets/logomaravilha.png'),
+          });
+        } catch (e) {
+          console.log('Erro ao atualizar metadados:', e);
+        }
       }
     };
 
@@ -136,38 +174,25 @@ export default function Index() {
   // ▶️ Controle do áudio
   const togglePlay = async () => {
     try {
-      if (!soundRef.current) {
-        setLoading(true);
-        const { sound } = await Audio.Sound.createAsync(
-          { uri: 'https://stm19.srvstm.com:7080/stream' },
-          { shouldPlay: true }
-        );
-        soundRef.current = sound;
-        setIsPlaying(true);
+      const state = await TrackPlayer.getState();
+      if (state === State.Playing) {
+        await TrackPlayer.pause();
       } else {
-        if (isPlaying) {
-          await soundRef.current.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await soundRef.current.playAsync();
-          setIsPlaying(true);
-        }
+        await TrackPlayer.play();
       }
     } catch (err) {
       console.error('Erro ao reproduzir:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
   const pauseAudioIfPlaying = async () => {
-    if (soundRef.current && isPlaying) {
-      try {
-        await soundRef.current.pauseAsync();
-      } catch (e) {
-        console.warn('Erro ao pausar áudio:', e);
+    try {
+      const state = await TrackPlayer.getState();
+      if (state === State.Playing) {
+        await TrackPlayer.pause();
       }
-      setIsPlaying(false);
+    } catch (e) {
+      console.warn('Erro ao pausar áudio:', e);
     }
   };
 

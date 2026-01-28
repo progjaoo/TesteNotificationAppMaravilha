@@ -42,7 +42,8 @@
           "BLUETOOTH_CONNECT",
           "BLUETOOTH",
           "ACCESS_NETWORK_STATE",
-          "SCHEDULE_EXACT_ALARM"
+          "SCHEDULE_EXACT_ALARM",
+          "POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -52,10 +53,13 @@
     },
     "plugins": [
       "expo-router",
-      "expo-notifications",{
-        "defaultChannel": "default",
-        "enableBackgroundRemoteNotifications": true
-      }
+      [
+        "expo-notifications",
+        {
+          "defaultChannel": "default",
+          "enableBackgroundRemoteNotifications": true
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,

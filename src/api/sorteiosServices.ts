@@ -16,3 +16,8 @@ export async function getSorteios(): Promise<Sorteio[]> {
   const response = await axios.get(`${API_URL}/sorteios/listar.php`);
   return response.data;
 }
+
+export async function getSorteioById(id: string): Promise<Sorteio> {
+  const response = await axios.get(`${API_URL}/sorteios/buscar.php?id=${id}`);
+  return response.data;
+}
