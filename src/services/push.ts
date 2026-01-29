@@ -4,8 +4,7 @@ import api from './api';
 import { registerForPushNotificationsAsync } from './notifications';
 
 export async function initPush() {
-/*   const saved = await AsyncStorage.getItem('push_registered');
-  if (saved === '1') return; */
+
   try {
     const token = await registerForPushNotificationsAsync();
     if (!token) return;

@@ -1,25 +1,23 @@
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
-import { useRouter } from 'expo-router';
+import { router, useRouter } from 'expo-router';
 import { useEffect } from 'react';
 import { Platform } from 'react-native';
+
 /**
  * Permite exibir notificações mesmo com o app aberto (foreground)
  */
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
+    shouldShowAlert: false,
+    shouldPlaySound: false,
     shouldSetBadge: false,
     shouldShowBanner: true,
     shouldShowList: true,
   }),
 });
-
-/**
- * Registra o app para receber push e retorna o Expo Push Token
- */
 
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   if (!Device.isDevice) {
@@ -51,28 +49,53 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   console.log('✅ Expo Push Token:', token);
 
    if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF8000',
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+      importance: AndroidImportance.HIGH,
     });
   }
 
   return token;
 }
 
-/**
- * Listener para notificações recebidas com o app aberto
- */
 export function useNotificationListener() {
   useEffect(() => {
+      
     const subscription =
-      Notifications.addNotificationReceivedListener(notification => {
-        console.log('📩 Notificação recebida:', notification);
+      Notifications.addNotificationReceivedListener(async (notification) => {
+        console.log('📩 Notificação recebida via Expo:', notification);
+
+        const { title, body, data } = notification.request.content;
+
+        await notifee.requestPermission()
+
+        await notifee.displayNotification({
+          title: title ?? '📢 Rádio 89 Maravilha',
+          body: body ?? 'Novo sorteio disponível!',
+          android: {
+            channelId: 'default',
+            pressAction: {
+              id: 'default',
+            }
+          },
+          data: data as any,
+        });
       });
 
-    return () => subscription.remove();
+    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        const sorteio_id = detail.notification?.data?.sorteio_id;
+        if (sorteio_id) {
+          router.push(`/detalhesSorteio?id=${sorteio_id}`);
+        }
+      }
+    });
+
+    return () => {
+      subscription.remove();
+      unsubscribeNotifee();
+    };
   }, []);
 }
 
