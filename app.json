@@ -59,7 +59,8 @@
           "defaultChannel": "default",
           "enableBackgroundRemoteNotifications": true
         }
-      ]
+      ],
+      "@notifee/react-native"
     ],
     "experiments": {
       "typedRoutes": true,

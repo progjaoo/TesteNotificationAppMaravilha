@@ -1,3 +1,4 @@
+import notifee, { AndroidImportance, EventType } from '@notifee/react-native';
 import Constants from 'expo-constants';
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
@@ -9,11 +10,10 @@ import { Platform } from 'react-native';
  */
 Notifications.setNotificationHandler({
   handleNotification: async () => ({
-    shouldShowAlert: true,
-    shouldPlaySound: true,
+    // Desabilitamos o alerta do Expo no foreground pois usaremos o Notifee para isso
+    shouldShowAlert: false,
+    shouldPlaySound: false,
     shouldSetBadge: false,
-    shouldShowBanner: true,
-    shouldShowList: true,
   }),
 });
 /**
@@ -49,11 +49,10 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   console.log('✅ Expo Push Token:', token);
 
   if (Platform.OS === 'android') {
-    await Notifications.setNotificationChannelAsync('default', {
-      name: 'default',
-      importance: Notifications.AndroidImportance.MAX,
-      vibrationPattern: [0, 250, 250, 250],
-      lightColor: '#FF8000',
+    await notifee.createChannel({
+      id: 'default',
+      name: 'Default Channel',
+      importance: AndroidImportance.HIGH,
     });
   }
 
@@ -65,12 +64,41 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
  */
 export function useNotificationListener() {
   useEffect(() => {
+    // Listener do Expo para receber a notificação
     const subscription =
-      Notifications.addNotificationReceivedListener(notification => {
-        console.log('📩 Notificação recebida:', notification);
+      Notifications.addNotificationReceivedListener(async (notification) => {
+        console.log('📩 Notificação recebida via Expo:', notification);
+
+        const { title, body, data } = notification.request.content;
+
+        // Exibir notificação local com Notifee para maior customização no foreground
+        await notifee.displayNotification({
+          title: title ?? '📢 Rádio 89 Maravilha',
+          body: body ?? 'Novo sorteio disponível!',
+          android: {
+            channelId: 'default',
+            pressAction: {
+              id: 'default',
+            },
+            data: data as any,
+          },
+        });
       });
 
-    return () => subscription.remove();
+    // Listener do Notifee para cliques em notificações no foreground
+    const unsubscribeNotifee = notifee.onForegroundEvent(({ type, detail }) => {
+      if (type === EventType.PRESS) {
+        const sorteio_id = detail.notification?.data?.sorteio_id;
+        if (sorteio_id) {
+          router.push(`/detalhesSorteio?id=${sorteio_id}`);
+        }
+      }
+    });
+
+    return () => {
+      subscription.remove();
+      unsubscribeNotifee();
+    };
   }, []);
 }
 
