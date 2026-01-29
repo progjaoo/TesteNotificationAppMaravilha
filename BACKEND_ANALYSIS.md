@@ -1,87 +1,55 @@
-# Análise do Backend (PHP) - Push Notifications
+# Análise do Backend e Guia de Notificações para Produção
 
-Esta análise descreve as melhorias necessárias nos scripts PHP para garantir que as notificações sejam enviadas corretamente e de forma eficiente.
+Esta análise descreve as melhorias necessárias nos scripts PHP e as configurações obrigatórias no ambiente Expo/Firebase para garantir que as notificações sejam entregues em aplicativos buildados (APK/IPA).
 
-## 1. `Criar.php` - Falta de `sorteio_id`
-O script chama o `enviar.php` via `file_get_contents`, mas não passa o `sorteio_id`. Sem isso, o aplicativo não consegue saber para qual sorteio deve navegar quando o usuário clica na notificação.
+## 1. `Criar.php` - Fluxo de Dados
+O script chama o `enviar.php` e passa o `sorteio_id`. Isso está correto.
 
-**Correção sugerida:**
-```php
-// No Criar.php, ao chamar o enviar.php:
-file_get_contents(
-  "http://127.0.0.1/apisorteio/push/enviar.php",
-  false,
-  stream_context_create([
-    'http' => [
-      'method'  => 'POST',
-      'header'  => "Content-Type: application/json\r\n",
-      'content' => json_encode([
-        'mensagem' => $mensagem,
-        'sorteio_id' => $sorteioId // <-- Adicionar isso
-      ])
-    ]
-  ])
-);
-```
+## 2. `Enviar.php` - Batching e Payload
+A API do Expo aceita no máximo 100 notificações por requisição. Você implementou o `array_chunk`, o que é excelente.
 
-## 2. `Enviar.php` - Batching (Loteamento)
-A API do Expo aceita no máximo 100 notificações por requisição. Se houver mais de 100 dispositivos, o envio atual pode falhar ou ser ignorado.
-
-**Correção sugerida:**
-Use `array_chunk` para dividir os tokens em grupos de 100.
-
-```php
-$chunks = array_chunk($tokens, 100);
-
-foreach ($chunks as $chunk) {
-    $payload = [];
-    foreach ($chunk as $token) {
-        $payload[] = [
-            'to'    => $token,
-            'sound' => 'default',
-            'title' => '📢 Rádio 89 Maravilha',
-            'body'  => $mensagem,
-            'data'  => [
-                'tipo' => 'NOVO_SORTEIO',
-                'sorteio_id' => $sorteioId
-            ]
-        ];
-    }
-    // Envia o curl aqui dentro do loop para cada chunk
-}
-```
-
-## 3. `Enviar.php` - Tratamento de Erros e Limpeza de Tokens
-Atualmente, o script não verifica se algum token se tornou inválido (ex: o usuário desinstalou o app). O Expo retorna erros como `DeviceNotRegistered` quando isso acontece.
-
-**Sugestão:**
-Verifique a resposta do Expo e marque os tokens como `ativo = 0` na tabela `dispositivos_push` caso receba um erro de que o dispositivo não está mais registrado.
-
-## 4. Redundância em `Criar.php`
-O script `Criar.php` chama `enviarPushNovoSorteio()` e logo em seguida faz uma chamada HTTP para `enviar.php`. Se ambas as funções fazem o envio via Expo, você está enviando notificações duplicadas para todos os usuários. Recomenda-se manter apenas uma forma de envio.
+**Importante sobre o campo `data`:**
+O campo `data` deve conter o `sorteio_id` para que o aplicativo saiba para onde navegar.
 
 ---
 
-# Configuração de Produção (IMPORTANTE)
+# 🚀 CHECKLIST DE PRODUÇÃO (NOTIFICAÇÕES NO APK/APP)
 
-Se as notificações funcionam no **Expo Go** mas não no **APK/Standalone**, o motivo mais provável é a falta de configuração do **Firebase Cloud Messaging (FCM)**.
+Se as notificações funcionam no **Expo Go** mas não no **APK instalado**, o problema é quase sempre de **Credenciais de Autorização**.
 
-### Por que isso acontece?
-O Expo Go usa as credenciais da própria Expo para enviar notificações. No entanto, quando você builda seu próprio APK, o Google exige que você tenha seu próprio projeto no Firebase para autorizar o envio de mensagens para o seu pacote (`com.claitonbarbosa.maravilhafmbh`).
+### A. Firebase Cloud Messaging (FCM) - OBRIGATÓRIO PARA ANDROID
+Quando você usa o Expo Go, a Expo usa as chaves dela. No seu APK próprio, você precisa das suas chaves.
 
-### Passos para corrigir:
-1. **Criar Projeto no Firebase**: Vá ao console do Firebase e crie um projeto.
-2. **Adicionar App Android**: Adicione um app Android com o pacote `com.claitonbarbosa.maravilhafmbh`.
-3. **Baixar `google-services.json`**: Coloque este arquivo na raiz do seu projeto React Native.
-4. **Atualizar `app.json`**:
-   ```json
-   "android": {
-     "package": "com.claitonbarbosa.maravilhafmbh",
-     "googleServicesFile": "./google-services.json",
-     "permissions": [...]
-   }
-   ```
-5. **Configurar Credenciais no Expo**: Rode `eas credentials` no seu terminal e selecione Android. Siga os passos para enviar a "Server Key" ou o arquivo JSON da conta de serviço do Firebase para a Expo.
-6. **Gerar novo Build**: Após essas configurações, você deve gerar um novo APK (`eas build -p android`).
+1. **google-services.json**: Certifique-se que o arquivo baixado do Firebase está na raiz do projeto.
+2. **FCM Server Key (Legacy)** ou **Service Account Key (HTTP v1)**:
+   - Vá ao [Console da Expo](https://expo.dev/).
+   - Vá em seu projeto -> **Credentials**.
+   - No Android, certifique-se de que a **FCM Server Key** ou o **Google Service Account Key** foi enviado.
+   - Sem isso, a Expo não tem "permissão" do Google para enviar mensagens para o seu APK.
 
-Sem o arquivo `google-services.json` configurado no `app.json`, as notificações **não chegarão** ao aplicativo instalado (APK).
+### B. Apple Push Notification Service (APNs) - OBRIGATÓRIO PARA iOS
+1. **GoogleService-Info.plist**: Deve estar na raiz do projeto.
+2. **Push Key (.p8)**: No console da Expo (Credentials -> iOS), você deve ter gerado e enviado uma chave de notificações da Apple.
+
+### C. Como debugar a entrega?
+A API da Expo retorna um "Receipt ID". Você pode usar esse ID para verificar se o Google/Apple aceitou a mensagem.
+- Use a ferramenta [Expo Push Debugger](https://expo.dev/notifications) para colar o seu token e ver se há erros de credenciais.
+
+### D. Ícone de Notificação (Android)
+No `app.json`, você pode configurar um ícone específico para as notificações (deve ser branco com fundo transparente):
+```json
+"notification": {
+  "icon": "./assets/notification-icon.png",
+  "color": "#FF8000"
+}
+```
+
+### E. Canal de Notificação
+No Android 8+, as mensagens **não aparecem** sem um canal. No código do App, eu já configurei o canal `default`. No seu PHP, você está enviando com o som `default`, o que deve funcionar se o canal existir no celular.
+
+---
+
+**Resumo da Solução Aplicada no Código do App:**
+- Implementação do **Notifee** para exibir alertas mesmo com o app aberto.
+- Criação de um `index.js` para capturar eventos em segundo plano.
+- Sincronização de rotas para `/detalhesSorteio?id=...`.

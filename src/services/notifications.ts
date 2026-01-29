@@ -63,6 +63,8 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
  * Listener para notificações recebidas com o app aberto
  */
 export function useNotificationListener() {
+  const router = useRouter();
+
   useEffect(() => {
     // Listener do Expo para receber a notificação
     const subscription =
@@ -75,6 +77,7 @@ export function useNotificationListener() {
         await notifee.displayNotification({
           title: title ?? '📢 Rádio 89 Maravilha',
           body: body ?? 'Novo sorteio disponível!',
+          data: data as any,
           android: {
             channelId: 'default',
             pressAction: {
@@ -99,7 +102,7 @@ export function useNotificationListener() {
       subscription.remove();
       unsubscribeNotifee();
     };
-  }, []);
+  }, [router]);
 }
 
 export function useNotificationNavigation() {
