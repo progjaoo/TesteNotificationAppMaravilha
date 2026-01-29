@@ -3,6 +3,7 @@ import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
+import { Platform } from 'react-native';
 /**
  * Permite exibir notificações mesmo com o app aberto (foreground)
  */
@@ -15,9 +16,11 @@ Notifications.setNotificationHandler({
     shouldShowList: true,
   }),
 });
+
 /**
  * Registra o app para receber push e retorna o Expo Push Token
  */
+
 export async function registerForPushNotificationsAsync(): Promise<string | null> {
   if (!Device.isDevice) {
     console.log('❌ Push só funciona em dispositivo físico');
@@ -46,6 +49,15 @@ export async function registerForPushNotificationsAsync(): Promise<string | null
   ).data;
 
   console.log('✅ Expo Push Token:', token);
+
+   if (Platform.OS === 'android') {
+    await Notifications.setNotificationChannelAsync('default', {
+      name: 'default',
+      importance: Notifications.AndroidImportance.MAX,
+      vibrationPattern: [0, 250, 250, 250],
+      lightColor: '#FF8000',
+    });
+  }
 
   return token;
 }

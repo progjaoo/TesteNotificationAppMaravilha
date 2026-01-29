@@ -4,16 +4,28 @@ import api from './api';
 import { registerForPushNotificationsAsync } from './notifications';
 
 export async function initPush() {
-  const saved = await AsyncStorage.getItem('push_registered');
-  if (saved === '1') return;
+/*   const saved = await AsyncStorage.getItem('push_registered');
+  if (saved === '1') return; */
+  try {
+    const token = await registerForPushNotificationsAsync();
+    if (!token) return;
 
-  const token = await registerForPushNotificationsAsync();
-  if (!token) return;
+    const savedToken = await AsyncStorage.getItem('push_token');
+    if (savedToken === token) {
+      console.log('ℹ️ Token já registrado no servidor.');
+      return;
+    }
 
-  await api.post('/push/register.php', {
-    token,
-    plataforma: Platform.OS.toUpperCase(),
-  });
+    console.log(`Tentando registrar token no servidor para plataforma: ${Platform.OS.toUpperCase()}`);
+    
+    await api.post('/push/register.php', {
+      token,
+      plataforma: Platform.OS.toUpperCase(),
+    });
 
-  await AsyncStorage.setItem('push_registered', '1');
+    await AsyncStorage.setItem('push_token', token);
+    console.log('✅ Token registrado com sucesso no servidor.');
+  } catch (error) {
+    console.error('❌ Erro ao inicializar push:', error);
+  }
 }

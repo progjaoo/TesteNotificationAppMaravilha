@@ -196,24 +196,28 @@ export default function Index() {
     }).start();
   }, []);
 
-  useEffect(() => {
-    const checkSorteioAberto = async () => {
-      try {
-        const res = await fetch('https://grupogtf.com.br/89fm/apisorteio/sorteios/aberto.php');
-        const json = await res.json();
+useEffect(() => {
+  const checkSorteioAberto = async () => {
+    try {
+      setShowSorteioBanner(false);
 
-        if (json?.existe) {
-          setSorteioAberto(json);
-          setShowSorteioBanner(true);
-        }
-      
-      } catch (e) {
-        console.log('Erro ao verificar sorteio:', e);
+      const res = await fetch(
+        'https://grupogtf.com.br/89fm/apisorteio/sorteios/aberto.php'
+      );
+      const json = await res.json();
+
+      if (json?.existe) {
+        setSorteioAberto(json.sorteio); 
+        setShowSorteioBanner(true);     
       }
-    };
+    } catch (e) {
+      console.log('Erro ao verificar sorteio:', e);
+    }
+  };
 
-    checkSorteioAberto();
-  }, []);
+  checkSorteioAberto();
+}, []);
+
 
   const handleShare = async () => {
   try {
@@ -311,7 +315,7 @@ export default function Index() {
               </TouchableOpacity>
             </View>
           </View>
-      )}
+        )}
       <View style={styles.mainContent}>
         
         <TouchableOpacity

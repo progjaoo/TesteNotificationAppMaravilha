@@ -10,7 +10,7 @@ export default function DetalhesSorteio() {
   useEffect(() => {
     axios
       .get(
-        `https://8bae138e942c.ngrok-free.app/sorteios/buscar.php?id=${id}`
+        `https://grupogtf.com.br/89fm/apisorteio/sorteios/buscar.php?id=${id}`
       )
       .then((res) => setSorteio(res.data));
   }, []);
