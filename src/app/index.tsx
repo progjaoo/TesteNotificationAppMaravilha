@@ -23,6 +23,10 @@ import { styles } from '../styles/index.styles';
 
 const { height } = Dimensions.get('window');
 
+/**
+ * Componente Principal - Rádio Maravilha FM
+ * Utiliza expo-audio para suporte nativo a Media Session (Controles na tela de bloqueio)
+ */
 export default function Index() {
   const navigation = useNavigation();
   const translateY = useRef(new Animated.Value(height * 0.8)).current;
@@ -30,6 +34,7 @@ export default function Index() {
   const [activeTab, setActiveTab] = useState<'ouvir' | 'assistir'>('ouvir');
 
   // Configuração do Player com expo-audio
+  // Nota: Isso requer que o aplicativo seja compilado (EAS Build) para incluir o módulo nativo.
   const player = useAudioPlayer('https://stm19.srvstm.com:7080/stream');
   const status = useAudioPlayerStatus(player);
 
@@ -37,8 +42,6 @@ export default function Index() {
   const loading = status.isBuffering || !status.isLoaded;
 
   const [musicaAtual, setMusicaAtual] = useState('-');
-  const [titulo, setTitulo] = useState('');
-  const [genero, setGenero] = useState('');
 
   const [showSorteioBanner, setShowSorteioBanner] = useState(false);
   const [sorteioAberto, setSorteioAberto] = useState<any>(null);
@@ -126,13 +129,11 @@ export default function Index() {
       const info = await getRadioInfo();
       if (info) {
         setMusicaAtual(info.musica_atual || '-');
-        setTitulo(info.titulo || '');
-        setGenero(info.genero || '');
 
-        // Atualiza metadados no player nativo
+        // Atualiza metadados no player nativo para aparecer na Central de Controle / Tela de Bloqueio
         player.updateLockScreenMetadata({
-          title: info.musica_atual || 'Rádio Maravilha - 89.1 FM',
-          artist: info.titulo || 'Ao Vivo',
+          title: info.musica_atual && info.musica_atual !== '-' ? info.musica_atual : 'Rádio Maravilha - 89.1 FM',
+          artist: 'Ao Vivo',
           artworkUrl: 'https://grupogtf.com.br/89fm/apisorteio/assets/logomaravilha.png',
         });
       }
@@ -158,7 +159,7 @@ export default function Index() {
     }
   };
 
-  // ⏹️ Ao mudar pra “Assistir”, pausa o áudio
+  // ⏹️ Ao mudar pra “Assistir”, pausa o áudio para não sobrepor o som do vídeo
   const handleTabChange = (tab: 'ouvir' | 'assistir') => {
     if (tab === 'assistir') {
       pauseAudioIfPlaying();

@@ -1,12 +1,12 @@
-import '@expo/metro-runtime';
+// index.js
 import notifee, { EventType } from '@notifee/react-native';
-import { App } from 'expo-router/build/qualified-entry';
-import { renderRootComponent } from 'expo-router/build/renderRootComponent';
 
-// Register Notifee background event handler
+/**
+ * Registro de eventos em background do Notifee.
+ * Deve ser chamado antes de inicializar o app para garantir que o Android capture eventos.
+ */
 notifee.onBackgroundEvent(async ({ type, detail }) => {
   const { notification, pressAction } = detail;
-
   console.log('Background event received:', type);
 
   if (type === EventType.PRESS) {
@@ -14,4 +14,5 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
   }
 });
 
-renderRootComponent(App);
+// Inicializa o Expo Router
+import 'expo-router/entry';
