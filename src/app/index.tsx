@@ -1,6 +1,6 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { DrawerActions } from '@react-navigation/native';
-import { Audio } from 'expo-av';
+import { useAudioPlayer, useAudioPlayerStatus, setAudioModeAsync } from 'expo-audio';
 import { router, Stack, useNavigation } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import {
@@ -28,15 +28,17 @@ export default function Index() {
   const translateY = useRef(new Animated.Value(height * 0.8)).current;
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<'ouvir' | 'assistir'>('ouvir');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const soundRef = useRef<Audio.Sound | null>(null);
+
+  // Configuração do Player com expo-audio
+  const player = useAudioPlayer('https://stm19.srvstm.com:7080/stream');
+  const status = useAudioPlayerStatus(player);
+
+  const isPlaying = status.playing;
+  const loading = status.isBuffering || !status.isLoaded;
 
   const [musicaAtual, setMusicaAtual] = useState('-');
   const [titulo, setTitulo] = useState('');
   const [genero, setGenero] = useState('');
-  const [interprete, setInterprete] = useState('');
-  const [capa, setCapa] = useState<string | null>(null);
 
   const [showSorteioBanner, setShowSorteioBanner] = useState(false);
   const [sorteioAberto, setSorteioAberto] = useState<any>(null);
@@ -55,6 +57,7 @@ export default function Index() {
     outputRange: [0, 24],
     extrapolate: 'clamp',
   });
+
   const panResponder = useRef(
     PanResponder.create({
       onMoveShouldSetPanResponder: (_, gestureState) =>
@@ -105,14 +108,15 @@ export default function Index() {
   useEffect(() => {
     (async () => {
       try {
-        await Audio.setAudioModeAsync({
-          allowsRecordingIOS: false,
-          staysActiveInBackground: true,
-          playsInSilentModeIOS: true,
-          shouldDuckAndroid: false,
-          playThroughEarpieceAndroid: false
+        await setAudioModeAsync({
+          shouldPlayInBackground: true,
+          playsInSilentMode: true,
+          interruptionMode: 'doNotMix',
         });
-      await togglePlay();
+
+        // Ativa controles na tela de bloqueio (Media Session)
+        player.setActiveForLockScreen(true);
+        player.play();
       } catch (e) {
         console.log('Erro ao configurar áudio:', e);
       }
@@ -124,57 +128,40 @@ export default function Index() {
         setMusicaAtual(info.musica_atual || '-');
         setTitulo(info.titulo || '');
         setGenero(info.genero || '');
-        setCapa(info.capa_musica || null);
+
+        // Atualiza metadados no player nativo
+        player.updateLockScreenMetadata({
+          title: info.musica_atual || 'Rádio Maravilha - 89.1 FM',
+          artist: info.titulo || 'Ao Vivo',
+          artworkUrl: 'https://grupogtf.com.br/89fm/apisorteio/assets/logomaravilha.png',
+        });
       }
     };
 
     fetchRadioInfo();
     const interval = setInterval(fetchRadioInfo, 20000);
     return () => clearInterval(interval);
-  }, []);
+  }, [player]);
 
   // ▶️ Controle do áudio
-  const togglePlay = async () => {
-    try {
-      if (!soundRef.current) {
-        setLoading(true);
-        const { sound } = await Audio.Sound.createAsync(
-          { uri: 'https://stm19.srvstm.com:7080/stream' },
-          { shouldPlay: true }
-        );
-        soundRef.current = sound;
-        setIsPlaying(true);
-      } else {
-        if (isPlaying) {
-          await soundRef.current.pauseAsync();
-          setIsPlaying(false);
-        } else {
-          await soundRef.current.playAsync();
-          setIsPlaying(true);
-        }
-      }
-    } catch (err) {
-      console.error('Erro ao reproduzir:', err);
-    } finally {
-      setLoading(false);
+  const togglePlay = () => {
+    if (isPlaying) {
+      player.pause();
+    } else {
+      player.play();
     }
   };
 
-  const pauseAudioIfPlaying = async () => {
-    if (soundRef.current && isPlaying) {
-      try {
-        await soundRef.current.pauseAsync();
-      } catch (e) {
-        console.warn('Erro ao pausar áudio:', e);
-      }
-      setIsPlaying(false);
+  const pauseAudioIfPlaying = () => {
+    if (isPlaying) {
+      player.pause();
     }
   };
 
   // ⏹️ Ao mudar pra “Assistir”, pausa o áudio
-  const handleTabChange = async (tab: 'ouvir' | 'assistir') => {
+  const handleTabChange = (tab: 'ouvir' | 'assistir') => {
     if (tab === 'assistir') {
-      await pauseAudioIfPlaying();
+      pauseAudioIfPlaying();
     }
     setActiveTab(tab);
   };

@@ -11,8 +11,6 @@ notifee.onBackgroundEvent(async ({ type, detail }) => {
 
   if (type === EventType.PRESS) {
     console.log('User pressed notification in background', notification);
-    // Note: Navigation in background is limited, but the app will open
-    // and useNotificationNavigation will handle it via Expo.
   }
 });
 

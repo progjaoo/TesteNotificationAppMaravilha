@@ -62,7 +62,8 @@
           "enableBackgroundRemoteNotifications": true
         }
       ],
-      "@notifee/react-native"
+      "@notifee/react-native",
+      "expo-audio"
     ],
     "experiments": {
       "typedRoutes": true,
