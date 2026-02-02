@@ -284,6 +284,8 @@ useEffect(() => {
           ),
         }}
       />
+        {/* CONTAINER DO BANNER ESTÁTICO */}
+        
         {showSorteioBanner && sorteioAberto && (
           <View style={styles.sorteioAviso}>
             

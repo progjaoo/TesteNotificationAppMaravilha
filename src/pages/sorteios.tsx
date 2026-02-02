@@ -26,6 +26,13 @@ export default function Sorteios() {
   const [sorteioSelecionado, setSorteioSelecionado] =
     useState<Sorteio | null>(null);
 
+  function formatarDataSemTimezone(data: string) {
+  if (!data) return '';
+
+    const [ano, mes, dia] = data.split('T')[0].split('-');
+
+    return `${dia}/${mes}/${ano}`;
+  }
   const carregarSorteios = async () => {
     try {
       setLoading(true);
@@ -147,15 +154,12 @@ export default function Sorteios() {
               </Text>
             </View>
 
-
             <View style={styles.infoItem}>
               <Ionicons name="gift-outline" size={22} color="#000" />
               <Text style={styles.infoText}>
                 Sorteio em:{' '}
                 {sorteioSelecionado &&
-                  new Date(
-                    sorteioSelecionado.data_sorteio
-                  ).toLocaleDateString('pt-BR')}
+                  formatarDataSemTimezone(sorteioSelecionado.data_sorteio)}
               </Text>
             </View>
 
@@ -164,9 +168,7 @@ export default function Sorteios() {
               <Text style={styles.infoText}>
                 Inscrições até:{' '}
                 {sorteioSelecionado &&
-                  new Date(
-                    sorteioSelecionado.data_final_cadastro
-                  ).toLocaleDateString('pt-BR')}
+                  formatarDataSemTimezone(sorteioSelecionado.data_final_cadastro)}
               </Text>
             </View>
           </TouchableOpacity>

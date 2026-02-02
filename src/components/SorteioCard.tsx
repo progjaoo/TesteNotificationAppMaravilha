@@ -40,6 +40,14 @@ export default function SorteioCard({
 
   const isEncerrado = hoje > dataFinal;
 
+  function formatarDataSemTimezone(data: string) {
+  if (!data) return '';
+
+    const [ano, mes, dia] = data.split('T')[0].split('-');
+
+    return `${dia}/${mes}/${ano}`;
+  }
+
   return (
     // 🔥 CARD CLICÁVEL
     <TouchableOpacity
@@ -61,12 +69,12 @@ export default function SorteioCard({
 
         <Text style={styles.date}>
           Data do Sorteio:{' '}
-          {new Date(data).toLocaleDateString('pt-BR')}
+          {formatarDataSemTimezone(data)}
         </Text>
 
         <Text style={styles.dateFinal}>
           Data final de inscrição:{' '}
-          {new Date(data_final_cadastro).toLocaleDateString('pt-BR')}
+          {formatarDataSemTimezone(data_final_cadastro)}
         </Text>
 
         {isEncerrado && (
@@ -76,7 +84,6 @@ export default function SorteioCard({
             </Text>
           </View>
         )}
-
         {/* 🔥 BOTÃO ISOLADO (NÃO DISPARA O CARD) */}
         <TouchableOpacity
           activeOpacity={0.8}

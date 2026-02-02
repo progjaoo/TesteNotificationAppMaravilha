@@ -221,18 +221,21 @@ contentArea: {
   musicTitle: { color: 'white', fontWeight: 'bold', fontSize: 20, paddingTop: 20 },
   musicSubtitle: { color: 'white', fontSize: 18,  marginTop: 5, textAlign: 'center' },
 
-  sorteioAviso: {
+sorteioAviso: {
+  position: 'absolute',
+  top: 30, 
+  alignSelf: 'center',
   width: '85%',
   backgroundColor: '#fff',
   borderRadius: 14,
   padding: 14,
-  marginLeft: '7.5%',
-  marginTop: 20,
   shadowColor: '#000',
   shadowOpacity: 0.3,
   shadowRadius: 6,
-  elevation: 5,
+  elevation: 10,
+  zIndex: 999,
 },
+
 sorteioAvisoHeader: {
   flexDirection: 'row',
   justifyContent: 'space-between',

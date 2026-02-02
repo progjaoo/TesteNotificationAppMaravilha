@@ -7,6 +7,7 @@ import {
   DrawerItemList,
 } from '@react-navigation/drawer';
 import { useFonts } from 'expo-font';
+import * as Notifications from 'expo-notifications';
 import { usePathname, useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import * as SplashScreen from 'expo-splash-screen';
@@ -14,8 +15,17 @@ import { useEffect } from 'react';
 import { Image, Text, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import AppHeader from '../components/AppHeader';
-import { useNotificationListener, useNotificationNavigation } from '../services/notifications';
-import { initPush } from '../services/push';
+import { initializeNotifications } from '../services/notifications';
+
+Notifications.setNotificationHandler({
+  handleNotification: async () => ({
+    shouldShowAlert: true,
+    shouldPlaySound: true,
+    shouldSetBadge: true,
+    shouldShowBanner: true,
+    shouldShowList: true,
+  }),
+});
 
 SplashScreen.preventAutoHideAsync();
 
@@ -24,13 +34,11 @@ export default function RootLayout() {
     SpaceMono: require('../../assets/fonts/SpaceMono-Regular.ttf'),
   });
 
-  useNotificationListener();
-  useNotificationNavigation();
-
   useEffect(() => {
     if (loaded) {
       SplashScreen.hideAsync();
-      initPush();
+      
+      initializeNotifications();
     }
   }, [loaded]);
 

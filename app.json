@@ -1,8 +1,8 @@
 {
   "expo": {
-    "name": "Rádio Maravilha FM",
+    "name": "89 Maravilha FM",
     "slug": "maravilhafmbh",
-    "version": "7.0.2",
+    "version": "7.0.3",
     "orientation": "portrait",
     "icon": "./assets/logomaravilha.png",
     "scheme": "maravilhaapp",
@@ -14,38 +14,38 @@
       "backgroundColor": "#FF8000"
     },
     "ios": {
-    "supportsTablet": true,
-    "bundleIdentifier": "com.claitonbarbosa.89maravilhafm",
-    "googleServicesFile": "./GoogleService-Info.plist",
-    "infoPlist": {
-      "UIBackgroundModes": [
-        "audio"
-      ],
-      "AVAudioSessionCategory": "playback",
-      "AVAudioSessionCategoryOptions": [
-        "mixWithOthers",
-        "duckOthers",
-        "allowBluetooth",
-        "allowBluetoothA2DP"
-      ],
-      "ITSAppUsesNonExemptEncryption": false
-    }
-  },
+      "supportsTablet": true,
+      "bundleIdentifier": "com.claitonbarbosa.89maravilhafm",
+      "googleServicesFile": "./GoogleService-Info.plist",
+      "infoPlist": {
+        "UIBackgroundModes": [
+          "audio"
+        ],
+        "AVAudioSessionCategory": "playback",
+        "AVAudioSessionCategoryOptions": [
+          "mixWithOthers",
+          "duckOthers",
+          "allowBluetooth",
+          "allowBluetoothA2DP"
+        ],
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
     "android": {
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "package": "com.claitonbarbosa.maravilhafmbh",
       "googleServicesFile": "./google-services.json",
       "permissions": [
-          "FOREGROUND_SERVICE",
-          "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
-          "WAKE_LOCK",
-          "INTERNET",
-          "BLUETOOTH_CONNECT",
-          "BLUETOOTH",
-          "ACCESS_NETWORK_STATE",
-          "SCHEDULE_EXACT_ALARM",
-          "POST_NOTIFICATIONS"
+        "FOREGROUND_SERVICE",
+        "FOREGROUND_SERVICE_MEDIA_PLAYBACK",
+        "WAKE_LOCK",
+        "INTERNET",
+        "BLUETOOTH_CONNECT",
+        "BLUETOOTH",
+        "ACCESS_NETWORK_STATE",
+        "SCHEDULE_EXACT_ALARM",
+        "POST_NOTIFICATIONS"
       ]
     },
     "web": {
@@ -67,12 +67,12 @@
       "typedRoutes": true,
       "reactCompiler": true
     },
-
     "extra": {
       "router": {},
       "eas": {
         "projectId": "72620fb9-520c-4d72-985b-d32125b8eade"
       }
-    }
+    },
+    "owner": "claitonbarbosa"
   }
 }
